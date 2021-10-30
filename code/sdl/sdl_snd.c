@@ -45,7 +45,7 @@ static int dmasize = 0;
 static SDL_AudioDeviceID sdlPlaybackDevice;
 
 #if defined USE_VOIP && SDL_VERSION_ATLEAST( 2, 0, 5 )
-#define SDL_ON_Make_AUDIO_CAPTURE
+#define SDL_AUDIO_CAPTURE_ON
 
 static SDL_AudioDeviceID sdlCaptureDevice;
 static cvar_t *s_sdlCapture;
@@ -93,7 +93,7 @@ static void SNDDMA_AudioCallback(void *userdata, Uint8 *stream, int len)
 	if (dmapos >= dmasize)
 		dmapos = 0;
 
-#ifdef SDL_ON_Make_AUDIO_CAPTURE
+#ifdef SDL_AUDIO_CAPTURE_ON
 	if (sdlMasterGain != 1.0f)
 	{
 		int i;
@@ -297,7 +297,7 @@ qboolean SNDDMA_Init( void )
 	dmasize = (dma.samples * (dma.samplebits/8));
 	dma.buffer = calloc(1, dmasize);
 
-#ifdef SDL_ON_Make_AUDIO_CAPTURE
+#ifdef SDL_AUDIO_CAPTURE_ON
 	// !!! FIXME: some of these SDL_OpenAudioDevice() values should be cvars.
 	s_sdlCapture = Cvar_Get( "s_sdlCapture", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	// !!! FIXME: pulseaudio capture records audio the entire time the program is running. https://bugzilla.libsdl.org/show_bug.cgi?id=4087
@@ -368,7 +368,7 @@ void SNDDMA_Shutdown( void )
 		sdlPlaybackDevice = 0;
 	}
 
-#ifdef SDL_ON_Make_AUDIO_CAPTURE
+#ifdef SDL_AUDIO_CAPTURE_ON
 	if (sdlCaptureDevice)
 	{
 		Com_Printf("Closing SDL audio capture device...\n");
@@ -414,7 +414,7 @@ void SNDDMA_BeginPainting( void )
 #ifdef USE_VOIP
 void SNDDMA_StartCapture(void)
 {
-#ifdef SDL_ON_Make_AUDIO_CAPTURE
+#ifdef SDL_AUDIO_CAPTURE_ON
 	if (sdlCaptureDevice)
 	{
 		SDL_ClearQueuedAudio(sdlCaptureDevice);
@@ -426,7 +426,7 @@ void SNDDMA_StartCapture(void)
 
 int SNDDMA_AvailableCaptureSamples(void)
 {
-#ifdef SDL_ON_Make_AUDIO_CAPTURE
+#ifdef SDL_AUDIO_CAPTURE_ON
 	// divided by 2 to convert from bytes to (mono16) samples.
 	return sdlCaptureDevice ? (SDL_GetQueuedAudioSize(sdlCaptureDevice) / 2) : 0;
 #else
@@ -437,7 +437,7 @@ int SNDDMA_AvailableCaptureSamples(void)
 
 void SNDDMA_Capture(int samples, byte *data)
 {
-#ifdef SDL_ON_Make_AUDIO_CAPTURE
+#ifdef SDL_AUDIO_CAPTURE_ON
 	// multiplied by 2 to convert from (mono16) samples to bytes.
 	if (sdlCaptureDevice)
 	{
@@ -452,7 +452,7 @@ void SNDDMA_Capture(int samples, byte *data)
 
 void SNDDMA_StopCapture(void)
 {
-#ifdef SDL_ON_Make_AUDIO_CAPTURE
+#ifdef SDL_AUDIO_CAPTURE_ON
 	if (sdlCaptureDevice)
 	{
 		SDL_PauseAudioDevice(sdlCaptureDevice, 1);
@@ -462,7 +462,7 @@ void SNDDMA_StopCapture(void)
 
 void SNDDMA_MasterGain( float val )
 {
-#ifdef SDL_ON_Make_AUDIO_CAPTURE
+#ifdef SDL_AUDIO_CAPTURE_ON
 	sdlMasterGain = val;
 #endif
 }
