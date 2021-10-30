@@ -806,7 +806,7 @@ void Con_DrawSolidConsole( float frac ) {
 		row--;
 	}
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	if ( download.progress[ 0 ] ) 
 	{
 		currentColorIndex = ColorIndex( COLOR_CYAN );

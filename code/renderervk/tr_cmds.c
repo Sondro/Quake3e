@@ -92,7 +92,7 @@ static void R_IssueRenderCommands( void ) {
 		if ( backEnd.throttle )
 			return; // or throttled on demand
 	} else {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		if ( ri.CL_IsMinimized() && !RE_CanMinimize() ) {
 			backEnd.screenshotMask = 0;
 			return;
@@ -158,7 +158,7 @@ returns NULL if there is not enough space for important commands
 =============
 */
 void *R_GetCommandBuffer( int bytes ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	tr.lastRenderCommand = RC_END_OF_LIST;
 #endif
 	return R_GetCommandBufferReserved( bytes, PAD( sizeof( swapBuffersCommand_t ), sizeof(void *) ) );
@@ -185,7 +185,7 @@ void R_AddDrawSurfCmd( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	tr.numDrawSurfCmds++;
 	if ( tr.drawSurfCmd == NULL ) {
 		tr.drawSurfCmd = cmd;
@@ -257,7 +257,7 @@ void RE_StretchPic( float x, float y, float w, float h,
 #define MODE_GREEN_MAGENTA 4
 #define MODE_MAX	MODE_GREEN_MAGENTA
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 static void R_SetColorMode(GLboolean *rgba, stereoFrame_t stereoFrame, int colormode)
 {
 	rgba[0] = rgba[1] = rgba[2] = rgba[3] = GL_TRUE;
@@ -312,11 +312,11 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 		return;
 	}
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	glState.finishCalled = qfalse;
 #endif
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	backEnd.doneBloom = qfalse;
 #endif
 
@@ -346,7 +346,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 
 	cmd->commandId = RC_DRAW_BUFFER;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	tr.lastRenderCommand = RC_DRAW_BUFFER;
 #endif
 
@@ -363,7 +363,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 			ri.Error( ERR_FATAL, "RE_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame );
 		}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		cmd->buffer = 0;
 #else
 		if ( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) )
@@ -373,7 +373,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 #endif
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( r_fastsky->integer && vk.fastSky ) {
 #else
 	if ( r_fastsky->integer ) {
@@ -482,7 +482,7 @@ void RE_FinishBloom( void )
 
 qboolean RE_CanMinimize( void )
 {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( vk.fboActive || vk.offscreenRender )
 		return qtrue;
 #endif

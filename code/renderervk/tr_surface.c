@@ -378,7 +378,7 @@ static void RB_SurfaceBeam( void )
 		VectorAdd( points[i][0], direction, points[i][1] );
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 
@@ -1248,7 +1248,7 @@ Draws x/y/z lines from the origin for orientation debugging
 ===================
 */
 static void RB_SurfaceAxis( void ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	int i;
 
 	RB_EndSurface();

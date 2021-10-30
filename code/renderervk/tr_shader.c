@@ -2048,7 +2048,7 @@ static int CollapseMultitexture( unsigned int st0bits, shaderStage_t *st0, shade
 	qboolean nonIdenticalColors;
 	qboolean swapLightmap;
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	if ( !qglActiveTextureARB ) {
 		return 0;
 	}
@@ -2063,7 +2063,7 @@ static int CollapseMultitexture( unsigned int st0bits, shaderStage_t *st0, shade
 		return 0;
 	}
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	// on voodoo2, don't combine different tmus
 	if ( glConfig.driverType == GLDRV_VOODOO ) {
 		if ( st0->bundle[0].image[0]->TMU ==
@@ -2099,7 +2099,7 @@ static int CollapseMultitexture( unsigned int st0bits, shaderStage_t *st0, shade
 
 	mtEnv = collapse[i].multitextureEnv;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( mtEnv == GL_ADD && st0->bundle[0].rgbGen != CGEN_IDENTITY ) {
 		mtEnv = GL_ADD_NONIDENTITY;
 	}
@@ -2146,7 +2146,7 @@ static int CollapseMultitexture( unsigned int st0bits, shaderStage_t *st0, shade
 
 	if ( nonIdenticalColors )
 	{
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		switch ( mtEnv )
 		{
 			case GL_ADD:
@@ -2177,7 +2177,7 @@ static int CollapseMultitexture( unsigned int st0bits, shaderStage_t *st0, shade
 	}
 	else
 	{
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		if ( st0->mtEnv )
 			st0->bundle[2] = st1->bundle[0]; // add to third bundle
 		else
@@ -2185,7 +2185,7 @@ static int CollapseMultitexture( unsigned int st0bits, shaderStage_t *st0, shade
 			st0->bundle[1] = st1->bundle[0];
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( st0->mtEnv )
 	{
 		st0->mtEnv3 = mtEnv;
@@ -2213,7 +2213,7 @@ static int CollapseMultitexture( unsigned int st0bits, shaderStage_t *st0, shade
 
 	Com_Memset( st0 + num_stages - 1, 0, sizeof( stages[0] ) );
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( vk.maxBoundDescriptorSets >= 8 && num_stages >= 3 && !st0->mtEnv3 )
 	{
 		if ( mtEnv == GL_BLEND_ONE_MINUS_ALPHA || mtEnv == GL_BLEND_ALPHA || mtEnv == GL_BLEND_MIX_ALPHA || mtEnv == GL_BLEND_MIX_ONE_MINUS_ALPHA || mtEnv == GL_BLEND_DST_COLOR_SRC_ALPHA )
@@ -3063,7 +3063,7 @@ static shader_t *FinishShader( void ) {
 		shader.fogPass = FP_LE;
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 
 	shader.tessFlags = TESS_XYZ;
 	stages[0].tessFlags = TESS_RGBA0 | TESS_ST0;
@@ -3240,7 +3240,7 @@ static shader_t *FinishShader( void ) {
 		//stages[0].adjustColorsForFog = ACFF_NONE;
 	}
 #endif // USE_FOG_COLLAPSE
-#endif // USE_VULKAN
+#endif // VULKAN_ON_Make
 #ifdef USE_PMLIGHT
 	FindLightingStages();
 #endif

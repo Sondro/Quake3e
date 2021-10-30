@@ -89,7 +89,7 @@ cvar_t		*s_khz;
 cvar_t		*s_show;
 static cvar_t *s_mixahead;
 static cvar_t *s_mixOffset;
-#if defined(__linux__) && !defined(USE_SDL)
+#if defined(__linux__) && !defined(SDL_ON_Make)
 cvar_t		*s_device;
 #endif
 
@@ -1509,7 +1509,7 @@ qboolean S_Base_Init( soundInterface_t *si ) {
 
 	s_show = Cvar_Get( "s_show", "0", CVAR_CHEAT );
 	s_testsound = Cvar_Get( "s_testsound", "0", CVAR_CHEAT );
-#if defined(__linux__) && !defined(USE_SDL)
+#if defined(__linux__) && !defined(SDL_ON_Make)
 	s_device = Cvar_Get( "s_device", "default", CVAR_ARCHIVE_ND | CVAR_LATCH );
 	Cvar_SetDescription( s_device, "Set ALSA output device\n"
 		" Use \"default\", \"sysdefault\", \"front\", etc.\n"

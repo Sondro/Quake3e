@@ -789,7 +789,7 @@ static void CL_ParseCommandString( msg_t *msg ) {
 	Q_strncpyz( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
 	clc.serverCommandsIgnore[ index ] = qfalse;
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	if ( !clc.cURLUsed )
 #endif
 	// -EC- : we may stuck on downloading because of non-working cgvm

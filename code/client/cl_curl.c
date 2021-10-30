@@ -20,13 +20,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 #include "client.h"
 cvar_t *cl_cURLLib;
 
 #define ALLOWED_PROTOCOLS ( CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP | CURLPROTO_FTPS )
 
-#ifdef USE_CURL_DLOPEN
+#ifdef CURL_DLL_ON_Make
 
 char* (*qcurl_version)(void);
 
@@ -80,7 +80,7 @@ static void *GPA(char *str)
 		return rv;
 	}
 }
-#endif /* USE_CURL_DLOPEN */
+#endif /* CURL_DLL_ON_Make */
 
 /*
 =================
@@ -89,7 +89,7 @@ CL_cURL_Init
 */
 qboolean CL_cURL_Init( void )
 {
-#ifdef USE_CURL_DLOPEN
+#ifdef CURL_DLL_ON_Make
 	if(cURLLib)
 		return qtrue;
 
@@ -155,7 +155,7 @@ qboolean CL_cURL_Init( void )
 #else
 	clc.cURLEnabled = qtrue;
 	return qtrue;
-#endif /* USE_CURL_DLOPEN */
+#endif /* CURL_DLL_ON_Make */
 }
 
 /*
@@ -166,7 +166,7 @@ CL_cURL_Shutdown
 void CL_cURL_Shutdown( void )
 {
 	CL_cURL_Cleanup();
-#ifdef USE_CURL_DLOPEN
+#ifdef CURL_DLL_ON_Make
 	if(cURLLib)
 	{
 		Sys_UnloadLibrary(cURLLib);
@@ -190,7 +190,7 @@ void CL_cURL_Shutdown( void )
 	qcurl_multi_cleanup = NULL;
 	qcurl_multi_info_read = NULL;
 	qcurl_multi_strerror = NULL;
-#endif /* USE_CURL_DLOPEN */
+#endif /* CURL_DLL_ON_Make */
 }
 
 void CL_cURL_Cleanup(void)
@@ -524,7 +524,7 @@ Com_DL_Init
 */
 qboolean Com_DL_Init( download_t *dl )
 {
-#ifdef USE_CURL_DLOPEN
+#ifdef CURL_DLL_ON_Make
 	Com_Printf( "Loading \"%s\"...", cl_cURLLib->string );
 	if( ( dl->func.lib = Sys_LoadLibrary( cl_cURLLib->string ) ) == NULL )
 	{
@@ -607,7 +607,7 @@ qboolean Com_DL_Init( download_t *dl )
 	dl->func.multi_strerror = curl_multi_strerror;
 
 	return qtrue;
-#endif /* USE_CURL_DLOPEN */
+#endif /* CURL_DLL_ON_Make */
 }
 
 
@@ -1090,4 +1090,4 @@ qboolean Com_DL_Perform( download_t *dl )
 	return qtrue;
 }
 
-#endif /* USE_CURL */
+#endif /* CURL_ON_Make */

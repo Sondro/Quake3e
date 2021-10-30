@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * You may also wish to include "jerror.h".
  */
 
-#ifdef USE_SYSTEM_JPEG
+#ifdef APP_JPG_ON_Make
 #	include <jpeglib.h>
 #	if JPEG_LIB_VERSION < 80 && !defined(MEM_SRCDST_SUPPORTED)
 #		error Need system libjpeg >= 80 or jpeg_mem_ support

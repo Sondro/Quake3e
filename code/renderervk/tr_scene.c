@@ -255,7 +255,7 @@ void RE_AddDynamicLightToScene( const vec3_t org, float intensity, float r, floa
 	if ( intensity <= 0 ) {
 		return;
 	}
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	// these cards don't have the correct blend mode
 	if ( glConfig.hardwareType == GLHW_RIVA128 || glConfig.hardwareType == GLHW_PERMEDIA2 ) {
 		return;
@@ -381,7 +381,7 @@ to handle mirrors,
 @@@@@@@@@@@@@@@@@@@@@
 */
 void RE_RenderScene( const refdef_t *fd ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	renderCommand_t	lastRenderCommand;
 #endif
 	viewParms_t		parms;
@@ -510,7 +510,7 @@ void RE_RenderScene( const refdef_t *fd ) {
 
 	VectorCopy( fd->vieworg, parms.pvsOrigin );
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	lastRenderCommand = tr.lastRenderCommand;
 	tr.drawSurfCmd = NULL;
 	tr.numDrawSurfCmds = 0;
@@ -518,7 +518,7 @@ void RE_RenderScene( const refdef_t *fd ) {
 
 	R_RenderView( &parms );
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( tr.needScreenMap )
 	{
 		if ( lastRenderCommand == RC_DRAW_BUFFER )

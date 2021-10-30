@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifdef USE_LOCAL_HEADERS
+#ifdef HEADERS_ON_Make
 #	include "SDL.h"
 #else
 #	include <SDL.h>

@@ -48,7 +48,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "iqm.h"
 
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 #include "vk.h"
 // GL constants substitutions
 typedef enum {
@@ -348,7 +348,7 @@ typedef struct {
 	qboolean		isScreenMap;
 } textureBundle_t;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 #define NUM_TEXTURE_BUNDLES 3
 #else
 #define NUM_TEXTURE_BUNDLES 2
@@ -366,7 +366,7 @@ typedef struct {
 	qboolean		isDetail;
 	qboolean		depthFragment;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	uint32_t		tessFlags;
 	uint32_t		numTexBundles;
 
@@ -527,7 +527,7 @@ typedef struct {
 	int			numLitSurfs;
 	struct litSurf_s	*litSurfs;
 #endif
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	qboolean	switchRenderPass;
 	qboolean	needScreenMap;
 #endif
@@ -544,7 +544,7 @@ typedef struct image_s {
 	imgFlags_t	flags;
 	int			frameUsed;			// for texture usage in frame statistics
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	int			internalFormat;
 
 	VkSamplerAddressMode wrapClampMode;
@@ -1237,7 +1237,7 @@ typedef struct {
 	qboolean				mapLoading;
 
 	int						needScreenMap;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	drawSurfsCommand_t		*drawSurfCmd;
 	int						numDrawSurfCmds;
 	int						lastRenderCommand;
@@ -1258,7 +1258,7 @@ extern glstatic_t gls;
 
 extern void myGlMultMatrix(const float *a, const float *b, float *out);
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 extern Vk_Instance	vk;				// shouldn't be cleared during ref re-init
 extern Vk_World		vk_world;		// this data is cleared during ref re-init
 #endif
@@ -1294,7 +1294,7 @@ extern cvar_t	*r_dlightScale;			// 0.1 - 1.0
 extern cvar_t	*r_dlightIntensity;		// 0.1 - 1.0
 #endif
 extern cvar_t	*r_dlightSaturation;	// 0.0 - 1.0
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 extern cvar_t	*r_device;
 #ifdef USE_VBO
 extern cvar_t	*r_vbo;
@@ -1427,7 +1427,7 @@ void	GL_TextureMode( const char *string );
 void	GL_CheckErrors( void );
 void	GL_State( unsigned stateVector );
 void	GL_ClientState( int unit, unsigned stateVector );
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 void	GL_TexEnv( GLint env );
 void	GL_Cull( cullType_t cullType );
 #endif
@@ -1582,7 +1582,7 @@ typedef struct shaderCommands_s
 	qboolean	dlightUpdateParams;
 #endif
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	Vk_Depth_Range depthRange;
 #endif
 
@@ -1957,7 +1957,7 @@ void RE_VertexLighting( qboolean allowed );
 
 qboolean R_HaveExtension( const char *ext );
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 #define GLE( ret, name, ... ) extern ret ( APIENTRY * q##name )( __VA_ARGS__ );
 	QGL_Core_PROCS;
 	QGL_Ext_PROCS;

@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 backEndData_t	*backEndData;
 backEndState_t	backEnd;
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 static const float s_flipMatrix[16] = {
 	// convert from our coordinate system (looking down X)
 	// to OpenGL's coordinate system (looking down -Z)
@@ -56,7 +56,7 @@ const float *GL_Ortho( const float left, const float right, const float bottom, 
 ** GL_Bind
 */
 void GL_Bind( image_t *image ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( !image ) {
 		ri.Printf( PRINT_WARNING, "GL_Bind: NULL image\n" );
 		image = tr.defaultImage;
@@ -101,7 +101,7 @@ void GL_Bind( image_t *image ) {
 */
 void GL_SelectTexture( int unit )
 {
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	if ( glState.currenttmu == unit )
 	{
 		return;
@@ -112,7 +112,7 @@ void GL_SelectTexture( int unit )
 	{
 		ri.Error( ERR_DROP, "GL_SelectTexture: unit = %i", unit );
 	}
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	qglActiveTextureARB( GL_TEXTURE0_ARB + unit );
 #endif
 	glState.currenttmu = unit;
@@ -122,7 +122,7 @@ void GL_SelectTexture( int unit )
 /*
 ** GL_SelectClientTexture
 */
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 static void GL_SelectClientTexture( int unit )
 {
 	if ( glState.currentArray == unit )
@@ -151,7 +151,7 @@ void GL_Cull( cullType_t cullType ) {
 	}
 
 	glState.faceCulling = cullType;
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	if ( cullType == CT_TWO_SIDED )
 	{
 		qglDisable( GL_CULL_FACE );
@@ -178,7 +178,7 @@ void GL_Cull( cullType_t cullType ) {
 */
 void GL_TexEnv( GLint env )
 {
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	if ( env == glState.texEnv[ glState.currenttmu ] )
 		return;
 
@@ -208,7 +208,7 @@ void GL_TexEnv( GLint env )
 */
 void GL_State( unsigned stateBits )
 {
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	unsigned diff = stateBits ^ glState.glStateBits;
 
 	if ( !diff )
@@ -388,11 +388,11 @@ void GL_State( unsigned stateBits )
 	}
 
 	glState.glStateBits = stateBits;
-#endif // USE_VULKAN
+#endif // VULKAN_ON_Make
 }
 
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 void GL_ClientState( int unit, unsigned stateBits )
 {
 	unsigned diff = stateBits ^ glState.glClientStateBits[ unit ];
@@ -451,7 +451,7 @@ static void RB_Hyperspace( void ) {
 		// do initialization shit
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	{
 		vec4_t color;
 		c = ( backEnd.refdef.time & 255 ) / 255.0f;
@@ -470,7 +470,7 @@ static void RB_Hyperspace( void ) {
 
 
 static void SetViewportAndScissor( void ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	//Com_Memcpy( vk_world.modelview_transform, backEnd.or.modelMatrix, 64 );
 	//vk_update_mvp();
 	// force depth range and viewport/scissor updates
@@ -498,7 +498,7 @@ to actually render the visible surfaces for this view
 =================
 */
 static void RB_BeginDrawingView( void ) {
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	int clearBits = 0;
 
 	// sync with gl if needed
@@ -519,7 +519,7 @@ static void RB_BeginDrawingView( void ) {
 	//
 	SetViewportAndScissor();
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_clear_depth( qtrue );
 #else
 	// ensures that depth writes are enabled for the depth clear
@@ -575,7 +575,7 @@ static void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	int				entityNum, oldEntityNum;
 	int				dlighted;
 	qboolean		depthRange, isCrosshair;
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	qboolean		oldDepthRange, wasCrosshair;
 #endif
 	int				i;
@@ -591,7 +591,7 @@ static void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	oldEntityNum = -1;
 	backEnd.currentEntity = &tr.worldEntity;
 	oldShader = NULL;
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	oldDepthRange = qfalse;
 	wasCrosshair = qfalse;
 #endif
@@ -609,7 +609,7 @@ static void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 		}
 
 		R_DecomposeSort( drawSurf->sort, &entityNum, &shader, &fogNum, &dlighted );
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		if ( vk.renderPassIndex == RENDER_PASS_SCREENMAP && entityNum != REFENTITYNUM_WORLD && backEnd.refdef.entities[ entityNum ].e.renderfx & RF_DEPTHHACK ) {
 			continue;
 		}
@@ -626,7 +626,7 @@ static void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			#define INSERT_POINT SS_FOG
 			if ( backEnd.refdef.numLitSurfs && oldShaderSort < INSERT_POINT && shader->sort >= INSERT_POINT ) {
 				//RB_BeginDrawingLitSurfs(); // no need, already setup in RB_BeginDrawingView()
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 				RB_LightingPass();
 #else
 				if ( depthRange ) {
@@ -694,7 +694,7 @@ static void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			// the world (like water) continue with the wrong frame
 			tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 			Com_Memcpy( vk_world.modelview_transform, backEnd.or.modelMatrix, 64 );
 			tess.depthRange = depthRange ? DEPTH_RANGE_WEAPON : DEPTH_RANGE_NORMAL;
 			vk_update_mvp( NULL );
@@ -706,7 +706,7 @@ static void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			// change depthrange. Also change projection matrix so first person weapon does not look like coming
 			// out of the screen.
 			//
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 			if (oldDepthRange != depthRange || wasCrosshair != isCrosshair)
 			{
 				if (depthRange)
@@ -769,7 +769,7 @@ static void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	backEnd.refdef.floatTime = originalTime;
 
 	// go back to the world modelview matrix
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	Com_Memcpy( vk_world.modelview_transform, backEnd.viewParms.world.modelMatrix, 64 );
 	tess.depthRange = DEPTH_RANGE_NORMAL;
 	//vk_update_mvp();
@@ -815,7 +815,7 @@ static void RB_RenderLitSurfList( dlight_t* dl ) {
 	shader_t		*shader, *oldShader;
 	int				fogNum;
 	int				entityNum, oldEntityNum;
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	qboolean		oldDepthRange, wasCrosshair;
 #endif
 	qboolean		depthRange, isCrosshair;
@@ -830,7 +830,7 @@ static void RB_RenderLitSurfList( dlight_t* dl ) {
 	oldEntityNum = -1;
 	backEnd.currentEntity = &tr.worldEntity;
 	oldShader = NULL;
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	oldDepthRange = qfalse;
 	wasCrosshair = qfalse;
 #endif
@@ -848,7 +848,7 @@ static void RB_RenderLitSurfList( dlight_t* dl ) {
 		}
 
 		R_DecomposeLitSort( litSurf->sort, &entityNum, &shader, &fogNum );
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		if ( vk.renderPassIndex == RENDER_PASS_SCREENMAP && entityNum != REFENTITYNUM_WORLD && backEnd.refdef.entities[ entityNum ].e.renderfx & RF_DEPTHHACK ) {
 			continue;
 		}
@@ -911,7 +911,7 @@ static void RB_RenderLitSurfList( dlight_t* dl ) {
 			R_TransformDlights( 1, dl, &backEnd.or );
 			tess.dlightUpdateParams = qtrue;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 			tess.depthRange = depthRange ? DEPTH_RANGE_WEAPON : DEPTH_RANGE_NORMAL;
 			Com_Memcpy( vk_world.modelview_transform, backEnd.or.modelMatrix, 64 );
 			vk_update_mvp( NULL );
@@ -985,7 +985,7 @@ static void RB_RenderLitSurfList( dlight_t* dl ) {
 	backEnd.refdef.floatTime = originalTime;
 
 	// go back to the world modelview matrix
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	Com_Memcpy( vk_world.modelview_transform, backEnd.viewParms.world.modelMatrix, 64 );
 	tess.depthRange = DEPTH_RANGE_NORMAL;
 	//vk_update_mvp();
@@ -994,7 +994,7 @@ static void RB_RenderLitSurfList( dlight_t* dl ) {
 	if ( depthRange ) {
 		qglDepthRange (0, 1);
 	}
-#endif // !USE_VULKAN
+#endif // !VULKAN_ON_Make
 }
 #endif // USE_PMLIGHT
 
@@ -1015,7 +1015,7 @@ RB_SetGL2D
 static void RB_SetGL2D( void ) {
 	backEnd.projection2D = qtrue;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_update_mvp( NULL );
 
 	// force depth range and viewport/scissor updates
@@ -1106,7 +1106,7 @@ void RE_UploadCinematic( int w, int h, int cols, int rows, byte *data, int clien
 
 		image->width = image->uploadWidth = cols;
 		image->height = image->uploadHeight = rows;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		qvkDestroyImage( vk.device, image->handle, NULL );
 		qvkDestroyImageView( vk.device, image->view, NULL );
 
@@ -1129,7 +1129,7 @@ void RE_UploadCinematic( int w, int h, int cols, int rows, byte *data, int clien
 
 		// otherwise, just subimage upload it so that drivers can tell we are going to be changing
 		// it and don't try and do a texture compression
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		buffer = resample_image_data( image, data, cols * rows * 4, &bytes_per_pixel );
 		vk_upload_image_data( image->handle, 0, 0, cols, rows, qfalse, buffer, bytes_per_pixel );
 		if ( buffer != data ) {
@@ -1190,7 +1190,7 @@ static const void *RB_StretchPic( const void *data ) {
 		RB_SetGL2D();
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( r_bloom->integer ) {
 		vk_bloom();
 	}
@@ -1320,7 +1320,7 @@ static void RB_DebugPolygon( int color, int numPoints, float *points ) {
 		return; // discard backfacing polygon
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	// Solid shade.
 	for (i = 0; i < numPoints; i++) {
 		VectorCopy(&points[3*i], tess.xyz[i]);
@@ -1396,7 +1396,7 @@ static void RB_DebugGraphics( void ) {
 	}
 
 	GL_Bind( tr.whiteImage );
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_update_mvp( NULL );
 #else
 	GL_Cull( CT_FRONT_SIDED );
@@ -1454,7 +1454,7 @@ static const void *RB_DrawSurfs( const void *data ) {
 	// draw main system development information (surface outlines, etc)
 	RB_DebugGraphics();
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( cmd->refdef.switchRenderPass ) {
 		vk_end_render_pass();
 		vk_begin_main_render_pass();
@@ -1479,7 +1479,7 @@ static const void *RB_DrawBuffer( const void *data ) {
 
 	cmd = (const drawBufferCommand_t *)data;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_begin_frame();
 
 	tess.depthRange = DEPTH_RANGE_NORMAL;
@@ -1517,7 +1517,7 @@ was there.  This is used to test for texture thrashing.
 Also called by RE_EndRegistration
 ===============
 */
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 void RB_ShowImages( void )
 {
 	int i;
@@ -1643,7 +1643,7 @@ RB_ColorMask
 static const void *RB_ColorMask( const void *data )
 {
 	const colorMaskCommand_t *cmd = data;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	// TODO: implement! ZZZZZZZZZZZ
 #else
 	qglColorMask( cmd->rgba[0], cmd->rgba[1], cmd->rgba[2], cmd->rgba[3] );
@@ -1664,7 +1664,7 @@ static const void *RB_ClearDepth( const void *data )
 
 	RB_EndSurface();
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_clear_depth( r_shadows->integer == 2 ? qtrue : qfalse );
 #else
 	qglClear( GL_DEPTH_BUFFER_BIT );
@@ -1683,7 +1683,7 @@ static const void *RB_ClearColor( const void *data )
 {
 	const clearColorCommand_t *cmd = data;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	backEnd.projection2D = qtrue;
 	vk_clear_color( colorBlack );
 	backEnd.projection2D = qfalse;
@@ -1709,7 +1709,7 @@ static const void *RB_FinishBloom( const void *data )
 
 	RB_EndSurface();
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( r_bloom->integer ) {
 		vk_bloom();
 	}
@@ -1742,7 +1742,7 @@ static const void *RB_SwapBuffers( const void *data ) {
 
 	tr.needScreenMap = 0;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_end_frame();
 #else
 	if ( backEnd.doneSurfaces && !glState.finishCalled ) {
@@ -1750,7 +1750,7 @@ static const void *RB_SwapBuffers( const void *data ) {
 	}
 #endif
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( backEnd.screenshotMask && vk.cmd->waitForFence ) {
 #else
 	if ( backEnd.screenshotMask && tr.frameCount > 1 ) {
@@ -1783,14 +1783,14 @@ static const void *RB_SwapBuffers( const void *data ) {
 		backEnd.screenshotMask = 0;
 	}
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	ri.GLimp_EndFrame();
 #endif
 
 	backEnd.projection2D = qfalse;
 	backEnd.doneSurfaces = qfalse;
 	backEnd.drawConsole = qfalse;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	backEnd.doneBloom = qfalse;
 #endif
 
@@ -1841,7 +1841,7 @@ void RB_ExecuteRenderCommands( const void *data ) {
 		case RC_END_OF_LIST:
 		default:
 			// stop rendering
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 			if ( vk.frame_count ) {
 				vk_end_frame();
 			}

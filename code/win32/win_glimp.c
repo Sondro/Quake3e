@@ -76,7 +76,7 @@ static qboolean s_classRegistered = qfalse;
 qboolean	QGL_Init( const char *dllname );
 void		QGL_Shutdown( qboolean unloadDLL );
 
-#ifdef USE_VULKAN_API
+#ifdef VULKAN_API_ON_Make
 qboolean	QVK_Init( void );
 void		QVK_Shutdown( qboolean unloadDLL );
 #endif
@@ -576,7 +576,7 @@ static qboolean GLW_InitOpenGLDriver( int colorbits )
 /*
 ** GLW_InitVulkanDriver
 */
-#ifdef USE_VULKAN_API
+#ifdef VULKAN_API_ON_Make
 static qboolean GLW_InitVulkanDriver( int colorbits )
 {
 	int depthbits;
@@ -753,7 +753,7 @@ static qboolean GLW_CreateWindow( int width, int height, int colorbits, qboolean
 	if ( colorbits == 0 )
 		colorbits = dm_desktop.dmBitsPerPel;
 
-#ifdef USE_VULKAN_API
+#ifdef VULKAN_API_ON_Make
 	if ( vulkan )
 		res = GLW_InitVulkanDriver( colorbits );
 	else
@@ -1449,7 +1449,7 @@ void GLimp_Shutdown( qboolean unloadDLL )
 }
 
 
-#ifdef USE_VULKAN_API
+#ifdef VULKAN_API_ON_Make
 static qboolean GLW_LoadVulkan( void )
 {
 	//
@@ -1557,4 +1557,4 @@ void VKimp_Shutdown( qboolean unloadDLL )
 	// shutdown QVK subsystem
 	QVK_Shutdown( unloadDLL );
 }
-#endif // USE_VULKAN_API
+#endif // VULKAN_API_ON_Make

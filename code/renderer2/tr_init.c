@@ -215,7 +215,7 @@ int		max_polyverts;
 
 
 // for modular renderer
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 void QDECL Com_Error( errorParm_t code, const char *fmt, ... )
 {
 	char buf[ 4096 ];
@@ -1502,7 +1502,7 @@ GetRefAPI
 
 @@@@@@@@@@@@@@@@@@@@@
 */
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 Q_EXPORT refexport_t* QDECL GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 #else
 refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {

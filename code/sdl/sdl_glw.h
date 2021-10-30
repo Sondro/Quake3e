@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __GLW_LINUX_H__
 #define __GLW_LINUX_H__
 
-#ifdef USE_LOCAL_HEADERS
+#ifdef HEADERS_ON_Make
 #	include "SDL.h"
 #else
 #	include <SDL.h>

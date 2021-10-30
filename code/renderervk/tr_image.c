@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static byte			 s_intensitytable[256];
 static unsigned char s_gammatable[256];
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 static unsigned char s_gammatable_linear[256];
 #endif
 
@@ -48,7 +48,7 @@ return a hash value for the filename
 */
 void R_GammaCorrect( byte *buffer, int bufSize ) {
 	int i;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( vk.capture.image != VK_NULL_HANDLE )
 		return;
 #endif
@@ -97,7 +97,7 @@ void GL_TextureMode( const char *string ) {
 	gl_filter_min = mode->minimize;
 	gl_filter_max = mode->maximize;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_wait_idle();
 	for ( i = 0 ; i < tr.numImages ; i++ ) {
 		img = tr.images[i];
@@ -171,7 +171,7 @@ void R_ImageList_f( void ) {
 
 		switch ( image->internalFormat )
 		{
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 			case VK_FORMAT_B8G8R8A8_UNORM:
 				format = "BGRA ";
 				estSize *= 4;
@@ -331,7 +331,7 @@ static void R_LightScaleTexture( byte *in, int inwidth, int inheight, qboolean o
 
 	if ( only_gamma )
 	{
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		if ( !glConfig.deviceSupportsGamma && !vk.fboActive )
 #else
 		if ( !glConfig.deviceSupportsGamma )
@@ -360,7 +360,7 @@ static void R_LightScaleTexture( byte *in, int inwidth, int inheight, qboolean o
 
 		c = inwidth*inheight;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		if ( glConfig.deviceSupportsGamma || vk.fboActive )
 #else
 		if ( glConfig.deviceSupportsGamma )
@@ -560,7 +560,7 @@ static qboolean RawImage_HasAlpha( const byte *scan, const int numPixels )
 	return qfalse;
 }
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 
 typedef struct {
 	byte *buffer;
@@ -822,7 +822,7 @@ static void upload_vk_image( Image_Upload_Data *upload_data, image_t *image ) {
 	}
 }
 
-#else // !USE_VULKAN
+#else // !VULKAN_ON_Make
 
 static GLint RawImage_GetInternalFormat( const byte *scan, int numPixels, qboolean lightMap, qboolean allowCompression )
 {
@@ -1042,7 +1042,7 @@ void R_UploadSubImage( byte *data, int x, int y, int width, int height, image_t 
 		Upload32( data, x, y, width, height, image, qtrue ); // subImage = qtrue
 	}
 }
-#endif // !USE_VULKAN
+#endif // !VULKAN_ON_Make
 
 
 /*
@@ -1056,7 +1056,7 @@ Picture data may be modified in-place during mipmap processing
 image_t *R_CreateImage( const char *name, const char *name2, byte *pic, int width, int height, imgFlags_t flags ) {
 	image_t		*image;
 	long		hash;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	Image_Upload_Data upload_data;
 #else
 	GLint		glWrapClampMode;
@@ -1109,7 +1109,7 @@ image_t *R_CreateImage( const char *name, const char *name2, byte *pic, int widt
 		image->flags |= IMGFLAG_NO_COMPRESSION | IMGFLAG_NOSCALE;
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( flags & IMGFLAG_CLAMPTOBORDER )
 		image->wrapClampMode = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 	else if ( flags & IMGFLAG_CLAMPTOEDGE )
@@ -1681,7 +1681,7 @@ void R_SetColorMappings( void ) {
 	// setup the overbright lighting
 	// negative value will force gamma in windowed mode
 	tr.overbrightBits = abs( r_overBrightBits->integer );
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( !glConfig.deviceSupportsGamma && !vk.fboActive )
 #else
 	if ( !glConfig.deviceSupportsGamma )
@@ -1689,7 +1689,7 @@ void R_SetColorMappings( void ) {
 		tr.overbrightBits = 0;		// need hardware gamma for overbright
 
 	// never overbright in windowed mode
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( !glConfig.isFullscreen && r_overBrightBits->integer >= 0 && !vk.fboActive )
 #else
 	if ( !glConfig.isFullscreen && r_overBrightBits->integer >= 0 )
@@ -1741,7 +1741,7 @@ void R_SetColorMappings( void ) {
 		s_intensitytable[i] = j;
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_update_post_process_pipelines();
 	
 	if ( glConfig.deviceSupportsGamma ) {
@@ -1764,7 +1764,7 @@ R_InitImages
 */
 void R_InitImages( void ) {
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	// initialize linear gamma table before setting color mappings for the first time
 	int i;
 
@@ -1792,7 +1792,7 @@ void R_DeleteTextures( void ) {
 	image_t *img;
 	int i;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_wait_idle();
 
 	for ( i = 0; i < tr.numImages; i++ ) {

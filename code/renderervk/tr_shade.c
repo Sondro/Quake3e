@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 R_DrawElements
 ==================
 */
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 void R_DrawElements( int numIndexes, const glIndex_t *indexes ) {
 	qglDrawElements( GL_TRIANGLES, numIndexes, GL_INDEX_TYPE, indexes );
 }
@@ -52,7 +52,7 @@ SURFACE SHADERS
 */
 
 shaderCommands_t	tess;
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 static qboolean	setArraysOnce;
 #endif
 
@@ -110,7 +110,7 @@ Draws triangle outlines for debugging
 ================
 */
 static void DrawTris( shaderCommands_t *input ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	uint32_t pipeline;
 
 	if ( r_showtris->integer == 1 && backEnd.drawConsole )
@@ -184,7 +184,7 @@ Draws vertex normals for debugging
 */
 static void DrawNormals( const shaderCommands_t *input ) {
 	int		i;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 #ifdef USE_VBO
 	if ( tess.vboIndex )
 		return; // must be handled specially
@@ -313,7 +313,7 @@ t0 = most upstream according to spec
 t1 = most downstream according to spec
 ===================
 */
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 static void DrawMultitextured( const shaderCommands_t *input, int stage ) {
 	const shaderStage_t *pStage;
 
@@ -380,7 +380,7 @@ static void ProjectDlightTexture_scalar( void ) {
 	float	*texCoords;
 	byte	*colors;
 	byte	clipBits[SHADER_MAX_VERTEXES];
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	uint32_t pipeline;
 #else
 	float	texCoordsArray[SHADER_MAX_VERTEXES][2];
@@ -403,7 +403,7 @@ static void ProjectDlightTexture_scalar( void ) {
 			continue;	// this surface definitely doesn't have any of this light
 		}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		texCoords = (float*)&tess.svars.texcoords[0][0];
 		tess.svars.texcoordPtr[0] = tess.svars.texcoords[0];
 		colors = tess.svars.colors[0][0].rgba;
@@ -491,7 +491,7 @@ static void ProjectDlightTexture_scalar( void ) {
 			continue;
 		}
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 		GL_ClientState( 1, CLS_NONE );
 		GL_ClientState( 0, CLS_TEXCOORD_ARRAY | CLS_COLOR_ARRAY );
 
@@ -501,7 +501,7 @@ static void ProjectDlightTexture_scalar( void ) {
 
 		GL_Bind( tr.dlightImage );
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		pipeline = vk.dlight_pipelines[dl->additive > 0 ? 1 : 0][tess.shader->cullType][tess.shader->polygonOffset];
 		vk_bind_pipeline( pipeline );
 		vk_bind_index_ext( numIndexes, hitIndexes );
@@ -542,7 +542,7 @@ Blends a fog texture on top of everything else
 ===================
 */
 static void RB_FogPass( void ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	uint32_t pipeline = vk.fog_pipelines[tess.shader->fogPass - 1][tess.shader->cullType][tess.shader->polygonOffset];
 #ifdef USE_FOG_ONLY
 	int fog_stage;
@@ -904,7 +904,7 @@ void R_ComputeTexCoords( const int b, const textureBundle_t *bundle ) {
 /*
 ** RB_IterateStagesGeneric
 */
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 static void RB_IterateStagesGeneric( const shaderCommands_t *input, qboolean fogCollapse )
 #else
 static void RB_IterateStagesGeneric( const shaderCommands_t *input )
@@ -914,7 +914,7 @@ static void RB_IterateStagesGeneric( const shaderCommands_t *input )
 	int tess_flags;
 	int stage, i;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	uint32_t pipeline;
 	int fog_stage;
 
@@ -938,7 +938,7 @@ static void RB_IterateStagesGeneric( const shaderCommands_t *input )
 			tess_flags &= ~TESS_VPOS;
 		}
 	}
-#endif // USE_VULKAN
+#endif // VULKAN_ON_Make
 
 	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
 	{
@@ -950,7 +950,7 @@ static void RB_IterateStagesGeneric( const shaderCommands_t *input )
 		tess.vboStage = stage;
 #endif
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		tess_flags |= pStage->tessFlags;
 
 		for ( i = 0;  i < pStage->numTexBundles; i++ ) {
@@ -1037,14 +1037,14 @@ static void RB_IterateStagesGeneric( const shaderCommands_t *input )
 		tess_flags = 0;
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( tess_flags ) // fog-only shaders?
 		vk_bind_geometry( tess_flags );
 #endif
 }
 
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 
 void VK_SetFogParams( vkUniform_t *uniform, int *fogStage )
 {
@@ -1072,7 +1072,7 @@ void VK_SetFogParams( vkUniform_t *uniform, int *fogStage )
 static void VK_SetLightParams( vkUniform_t *uniform, const dlight_t *dl ) {
 	float radius;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( !glConfig.deviceSupportsGamma && !vk.fboActive )
 #else
 	if ( !glConfig.deviceSupportsGamma )
@@ -1346,7 +1346,7 @@ void RB_StageIteratorGeneric( void )
 		qglDisable( GL_POLYGON_OFFSET_FILL );
 	}
 }
-#endif // !USE_VULKAN
+#endif // !VULKAN_ON_Make
 
 
 /*

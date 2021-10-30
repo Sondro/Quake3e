@@ -34,7 +34,7 @@ glstate_t	glState;
 
 glstatic_t	gls;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 static void VkInfo_f( void );
 #endif
 static void GfxInfo( void );
@@ -76,7 +76,7 @@ cvar_t	*r_dlightScale;
 cvar_t	*r_dlightIntensity;
 #endif
 cvar_t	*r_dlightSaturation;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 cvar_t	*r_device;
 #ifdef USE_VBO
 cvar_t	*r_vbo;
@@ -90,7 +90,7 @@ cvar_t	*r_renderWidth;
 cvar_t	*r_renderHeight;
 cvar_t	*r_renderScale;
 cvar_t	*r_ext_supersample;
-#endif // USE_VULKAN
+#endif // VULKAN_ON_Make
 
 cvar_t	*r_dlightBacks;
 
@@ -179,7 +179,7 @@ static cvar_t* r_maxpolyverts;
 int		max_polys;
 int		max_polyverts;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 #include "vk.h"
 Vk_Instance vk;
 Vk_World	vk_world;
@@ -187,7 +187,7 @@ Vk_World	vk_world;
 
 static char gl_extensions[ 32768 ];
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 
 #define GLE( ret, name, ... ) ret ( APIENTRY * q##name )( __VA_ARGS__ );
 	QGL_Core_PROCS;
@@ -247,7 +247,7 @@ static void R_ClearSymTables( void )
 
 
 // for modular renderer
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 void QDECL Com_Error( errorParm_t code, const char *fmt, ... )
 {
 	char buf[ 4096 ];
@@ -287,7 +287,7 @@ qboolean R_HaveExtension( const char *ext )
 /*
 ** R_InitExtensions
 */
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 static void R_InitExtensions( void )
 {
 	float version;
@@ -493,7 +493,7 @@ static void InitOpenGL( void )
 
 	if ( glConfig.vidWidth == 0 )
 	{
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		if ( !ri.VKimp_Init )
 		{
 			ri.Error( ERR_FATAL, "Vulkan interface is not initialized" );
@@ -581,7 +581,7 @@ static void InitOpenGL( void )
 		gls.initTime = ri.Milliseconds();
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( !vk.active ) {
 		// might happen after REF_KEEP_WINDOW
 		vk_initialize();
@@ -603,7 +603,7 @@ GL_CheckErrors
 ==================
 */
 void GL_CheckErrors( void ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 #else
 	int		err;
     const char *s;
@@ -683,7 +683,7 @@ Return value must be freed with ri.Hunk_FreeTempMemory()
 */
 static byte *RB_ReadPixels(int x, int y, int width, int height, size_t *offset, int *padlen, int lineAlign )
 {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	byte *buffer, *bufstart;
 	int linelen;
 	int	bufAlign;
@@ -1134,7 +1134,7 @@ const void *RB_TakeVideoFrameCmd( const void *data )
 
 	cmd = (const videoFrameCommand_t *)data;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	packAlign = 1;
 #else
 	qglGetIntegerv(GL_PACK_ALIGNMENT, &packAlign);
@@ -1151,7 +1151,7 @@ const void *RB_TakeVideoFrameCmd( const void *data )
 
 	cBuf = PADP(cmd->captureBuffer, packAlign);
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_read_pixels(cBuf, cmd->width, cmd->height);
 #else
 	qglReadPixels(0, 0, cmd->width, cmd->height, GL_RGB, GL_UNSIGNED_BYTE, cBuf);
@@ -1211,7 +1211,7 @@ const void *RB_TakeVideoFrameCmd( const void *data )
 */
 static void GL_SetDefaultState( void )
 {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	glState.glStateBits = GLS_DEPTHTEST_DISABLE | GLS_DEPTHMASK_TRUE;
 #else
 	int i;
@@ -1309,7 +1309,7 @@ static void GfxInfo( void )
 	const char *fsstrings[] = { "windowed", "fullscreen" };
 	const char *fs;
 	int mode;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	ri.Printf( PRINT_ALL, "\nVK_VENDOR: %s\n", glConfig.vendor_string );
 	ri.Printf( PRINT_ALL, "VK_RENDERER: %s\n", glConfig.renderer_string );
 	ri.Printf( PRINT_ALL, "VK_VERSION: %s\n", glConfig.version_string );
@@ -1333,7 +1333,7 @@ static void GfxInfo( void )
 #endif
 
 	ri.Printf( PRINT_ALL, "\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	ri.Printf( PRINT_ALL, " presentation: %s\n", vk_format_string( vk.present_format.format ) );
 	if ( vk.color_format != vk.present_format.format ) {
 		ri.Printf( PRINT_ALL, " color: %s\n", vk_format_string( vk.color_format ) );
@@ -1376,7 +1376,7 @@ static void GfxInfo( void )
 		ri.Printf( PRINT_ALL, "N/A\n" );
 	}
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	ri.Printf( PRINT_ALL, "multitexture: %s\n", enablestrings[qglActiveTextureARB != 0] );
 	ri.Printf( PRINT_ALL, "compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ] );
 	ri.Printf( PRINT_ALL, "texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0] );
@@ -1404,7 +1404,7 @@ static void VarInfo( void )
 	ri.Printf( PRINT_ALL, "texture bits: %d\n", r_texturebits->integer ? r_texturebits->integer : 32 );
 	ri.Printf( PRINT_ALL, "picmip: %d%s\n", r_picmip->integer, r_nomip->integer ? ", worldspawn only" : "" );
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( r_vertexLight->integer ) {
 		ri.Printf( PRINT_ALL, "HACK: using vertex lightmap approximation\n" );
 	}
@@ -1436,7 +1436,7 @@ static void GfxInfo_f( void )
 }
 
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 static void VkInfo_f( void )
 {
 	ri.Printf(PRINT_ALL, "max_vertex_usage: %iKb\n", (int)((vk.stats.vertex_buffer_max + 1023) / 1024) );
@@ -1456,7 +1456,7 @@ RE_SyncRender
 */
 static void RE_SyncRender( void )
 {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( vk.device )
 		vk_wait_idle();
 #else
@@ -1482,7 +1482,7 @@ static void R_Register( void )
 	ri.Cmd_AddCommand( "screenshotJPEG", R_ScreenShot_f );
 	ri.Cmd_AddCommand( "screenshotBMP", R_ScreenShot_f );
 	ri.Cmd_AddCommand( "gfxinfo", GfxInfo_f );
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	ri.Cmd_AddCommand( "vkinfo", VkInfo_f );
 #endif
 
@@ -1515,7 +1515,7 @@ static void R_Register( void )
 	r_texturebits = ri.Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE_ND | CVAR_LATCH );
 
 	r_mergeLightmaps = ri.Cvar_Get( "r_mergeLightmaps", "1", CVAR_ARCHIVE_ND | CVAR_LATCH );
-#if defined (USE_VULKAN) && defined (USE_VBO)
+#if defined (VULKAN_ON_Make) && defined (USE_VBO)
 	r_vbo = ri.Cvar_Get( "r_vbo", "1", CVAR_ARCHIVE | CVAR_LATCH );
 #endif
 
@@ -1658,7 +1658,7 @@ static void R_Register( void )
 
 	r_showsky = ri.Cvar_Get( "r_showsky", "0", CVAR_LATCH );
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	r_device = ri.Cvar_Get( "r_device", "-1", CVAR_ARCHIVE_ND | CVAR_LATCH );
 	ri.Cvar_CheckRange( r_device, "-2", NULL, CV_INTEGER );
 	ri.Cvar_SetDescription( r_device, "Select physical device to render:\n" \
@@ -1700,7 +1700,7 @@ static void R_Register( void )
 		" 2 - nearest filtering, preserve aspect ratio (black bars on sides)\n"
 		" 3 - linear filtering, stretch to full size\n"
 		" 4 - linear filtering, preserve aspect ratio (black bars on sides)\n" );
-#endif // USE_VULKAN
+#endif // VULKAN_ON_Make
 }
 
 
@@ -1710,7 +1710,7 @@ R_Init
 ===============
 */
 void R_Init( void ) {
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	int	err;
 #endif
 	int i;
@@ -1779,7 +1779,7 @@ void R_Init( void ) {
 
 	R_InitImages();
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_create_pipelines();
 #endif
 
@@ -1791,7 +1791,7 @@ void R_Init( void ) {
 
 	R_InitFreeType();
 
-#ifndef USE_VULKAN
+#ifndef VULKAN_ON_Make
 	err = qglGetError();
 	if ( err != GL_NO_ERROR )
 		ri.Printf( PRINT_WARNING, "glGetError() = 0x%x\n", err );
@@ -1807,7 +1807,7 @@ RE_Shutdown
 ===============
 */
 static void RE_Shutdown( refShutdownCode_t code ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( code == REF_KEEP_CONTEXT ) {
 		if ( ( ri.Milliseconds() - gls.initTime ) > 48 * 3600 * 1000 ) {
 			code = REF_KEEP_WINDOW; // destroy context
@@ -1825,14 +1825,14 @@ static void RE_Shutdown( refShutdownCode_t code ) {
 	ri.Cmd_RemoveCommand( "skinlist" );
 	ri.Cmd_RemoveCommand( "gfxinfo" );
 	ri.Cmd_RemoveCommand( "shaderstate" );
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	ri.Cmd_RemoveCommand( "vkinfo" );
 #endif
 
 	if ( tr.registered ) {
 		//R_IssuePendingRenderCommands();
 		R_DeleteTextures();
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		vk_release_resources();
 #endif
 	}
@@ -1841,7 +1841,7 @@ static void RE_Shutdown( refShutdownCode_t code ) {
 
 	// shut down platform specific OpenGL/Vulkan stuff
 	if ( code != REF_KEEP_CONTEXT ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		vk_shutdown();
 
 		//Com_Memset( &vk, 0, sizeof( vk ) );
@@ -1881,7 +1881,7 @@ Touch all images to make sure they are resident
 =============
 */
 static void RE_EndRegistration( void ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_wait_idle();
 	// command buffer is not in recording state at this stage
 	// so we can't issue RB_ShowImages() there
@@ -1899,7 +1899,7 @@ static void RE_EndRegistration( void ) {
 GetRefAPI
 @@@@@@@@@@@@@@@@@@@@@
 */
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 Q_EXPORT refexport_t* QDECL GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 #else
 refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {

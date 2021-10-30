@@ -97,7 +97,7 @@ static void R_CalcShadowEdges( void ) {
 					i = tess.numVertexes;
 					break;
 				}
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 				tess.indexes[ tess.numIndexes + 0 ] = i;
 				tess.indexes[ tess.numIndexes + 1 ] = i2;
 				tess.indexes[ tess.numIndexes + 2 ] = i + tess.numVertexes;
@@ -117,7 +117,7 @@ static void R_CalcShadowEdges( void ) {
 		}
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	tess.numVertexes *= 2;
 
 	colors = &tess.svars.colors[0][0]; // we need at least 2x SHADER_MAX_VERTEXES there
@@ -145,7 +145,7 @@ void RB_ShadowTessEnd( void ) {
 	int		i;
 	int		numTris;
 	vec3_t	lightDir;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	uint32_t pipeline[2];
 #else
 	GLboolean rgba[4];
@@ -211,7 +211,7 @@ void RB_ShadowTessEnd( void ) {
 	R_CalcShadowEdges();
 
 	// draw the silhouette edges
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	GL_Bind( tr.whiteImage );
 
 	// mirrors have the culling order reversed
@@ -290,7 +290,7 @@ overlap and double darken.
 =================
 */
 void RB_ShadowFinish( void ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	float tmp[16];
 	int i;
 #endif
@@ -314,7 +314,7 @@ void RB_ShadowFinish( void ) {
 		return;
 	}
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	GL_Bind( tr.whiteImage );
 
 	for ( i = 0; i < 4; i++ )

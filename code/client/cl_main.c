@@ -28,7 +28,7 @@ cvar_t	*cl_noprint;
 cvar_t	*cl_debugMove;
 cvar_t	*cl_motd;
 
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 cvar_t	*cl_renderer;
 #endif
 
@@ -53,7 +53,7 @@ cvar_t	*cl_activeAction;
 cvar_t	*cl_motdString;
 
 cvar_t	*cl_allowDownload;
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 cvar_t	*cl_mapAutoDownload;
 #endif
 cvar_t	*cl_conXOffset;
@@ -104,13 +104,13 @@ char				cl_oldGame[ MAX_QPATH ];
 qboolean			cl_oldGameSet;
 static	qboolean	noGameRestart = qfalse;
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 download_t			download;
 #endif
 
 // Structure containing functions exported from refresh DLL
 refexport_t	re;
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 static void	*rendererLib;
 #endif
 
@@ -923,7 +923,7 @@ static void CL_PlayDemo_f( void ) {
 		clc.compat = qfalse;
 
 	// read demo messages until connected
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED && !Com_DL_InProgress( &download ) ) {
 #else
 	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED ) {
@@ -984,7 +984,7 @@ CL_ShutdownAll
 */
 void CL_ShutdownAll( void ) {
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	CL_cURL_Shutdown();
 #endif
 
@@ -1972,7 +1972,7 @@ Called when all downloading has been completed
 */
 static void CL_DownloadsComplete( void ) {
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	// if we downloaded with cURL
 	if ( clc.cURLUsed ) {
 		clc.cURLUsed = qfalse;
@@ -2119,7 +2119,7 @@ void CL_NextDownload( void )
 		else
 			s = localName + strlen(localName); // point at the null byte
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 		if(!(cl_allowDownload->integer & DLF_NO_REDIRECT)) {
 			if(clc.sv_allowDownload & DLF_NO_REDIRECT) {
 				Com_Printf("WARNING: server does not "
@@ -2148,7 +2148,7 @@ void CL_NextDownload( void )
 				"configuration (cl_allowDownload is %d)\n",
 				cl_allowDownload->integer);
 		}
-#endif /* USE_CURL */
+#endif /* CURL_ON_Make */
 
 		if( !useCURL ) {
 		if( (cl_allowDownload->integer & DLF_NO_UDP) ) {
@@ -2216,7 +2216,7 @@ void CL_InitDownloads( void ) {
 
 	}
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	if ( cl_mapAutoDownload->integer && ( !(clc.sv_allowDownload & DLF_ENABLE) || clc.demoplaying ) )
 	{
 		const char *info, *mapname, *bsp;
@@ -2235,7 +2235,7 @@ void CL_InitDownloads( void ) {
 			}
 		}
 	}
-#endif // USE_CURL
+#endif // CURL_ON_Make
 
 	CL_DownloadsComplete();
 }
@@ -2953,7 +2953,7 @@ void CL_Frame( int msec, int realMsec ) {
 	float fps;
 	float frameDuration;
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	if ( download.cURL ) {
 		Com_DL_Perform( &download );
 	}
@@ -2966,7 +2966,7 @@ void CL_Frame( int msec, int realMsec ) {
 	// save the msec before checking pause
 	cls.realFrametime = realMsec;
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	if ( clc.downloadCURLM ) {
 		CL_cURL_PerformDownload();
 		// we can't process frames normally when in disconnected
@@ -3122,7 +3122,7 @@ CL_ShutdownRef
 */
 static void CL_ShutdownRef( refShutdownCode_t code ) {
 
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 	if ( cl_renderer->modified ) {
 		code = REF_UNLOAD_DLL;
 	}
@@ -3143,7 +3143,7 @@ static void CL_ShutdownRef( refShutdownCode_t code ) {
 		re.Shutdown( code );
 	}
 
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 	if ( rendererLib ) {
 		Sys_UnloadLibrary( rendererLib );
 		rendererLib = NULL;
@@ -3310,7 +3310,7 @@ CL_InitRef
 static void CL_InitRef( void ) {
 	refimport_t	rimp;
 	refexport_t	*ret;
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 	GetRefAPI_t		GetRefAPI;
 	char			dllName[ MAX_OSPATH ];
 #endif
@@ -3319,7 +3319,7 @@ static void CL_InitRef( void ) {
 
 	Com_Printf( "----- Initializing Renderer ----\n" );
 
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 
 #if defined (__linux__) && defined(__i386__)
 #define REND_ARCH_STRING "x86"
@@ -3327,12 +3327,12 @@ static void CL_InitRef( void ) {
 #define REND_ARCH_STRING ARCH_STRING
 #endif
 
-	Com_sprintf( dllName, sizeof( dllName ), RENDERER_PREFIX "_%s_" REND_ARCH_STRING DLL_EXT, cl_renderer->string );
+	Com_sprintf( dllName, sizeof( dllName ), RENDERER_NAME_Make "_%s_" REND_ARCH_STRING DLL_EXT, cl_renderer->string );
 	rendererLib = FS_LoadLibrary( dllName );
 	if ( !rendererLib )
 	{
 		Cvar_ForceReset( "cl_renderer" );
-		Com_sprintf( dllName, sizeof( dllName ), RENDERER_PREFIX "_%s_" REND_ARCH_STRING DLL_EXT, cl_renderer->string );
+		Com_sprintf( dllName, sizeof( dllName ), RENDERER_NAME_Make "_%s_" REND_ARCH_STRING DLL_EXT, cl_renderer->string );
 		rendererLib = FS_LoadLibrary( dllName );
 		if ( !rendererLib )
 		{
@@ -3424,7 +3424,7 @@ static void CL_InitRef( void ) {
 	rimp.GLimp_SetGamma = GLimp_SetGamma;
 
 	// Vulkan API
-#ifdef USE_VULKAN_API
+#ifdef VULKAN_API_ON_Make
 	rimp.VKimp_Init = VKimp_Init;
 	rimp.VKimp_Shutdown = VKimp_Shutdown;
 	rimp.VK_GetInstanceProcAddr = VK_GetInstanceProcAddr;
@@ -3709,7 +3709,7 @@ static void CL_ModeList_f( void )
 }
 
 
-#ifdef USE_RENDERER_DLOPEN
+#ifdef RENDERER_DLLS_ON_Make
 static qboolean isValidRenderer( const char *s ) {
 	while ( *s ) {
 		if ( !((*s >= 'a' && *s <= 'z') || (*s >= 'A' && *s <= 'Z') || (*s >= '1' && *s <= '9')) )
@@ -3766,9 +3766,9 @@ static void CL_InitGLimp_Cvars( void )
 
 	cl_drawBuffer = Cvar_Get( "r_drawBuffer", "GL_BACK", CVAR_CHEAT );
 
-#ifdef USE_RENDERER_DLOPEN
-#ifdef RENDERER_DEFAULT
-	cl_renderer = Cvar_Get( "cl_renderer", XSTRING( RENDERER_DEFAULT ), CVAR_ARCHIVE | CVAR_LATCH );
+#ifdef RENDERER_DLLS_ON_Make
+#ifdef RENDERER_MAIN_Make
+	cl_renderer = Cvar_Get( "cl_renderer", XSTRING( RENDERER_MAIN_Make ), CVAR_ARCHIVE | CVAR_LATCH );
 #else
 	cl_renderer = Cvar_Get( "cl_renderer", "opengl", CVAR_ARCHIVE | CVAR_LATCH );
 #endif
@@ -3834,9 +3834,9 @@ void CL_Init( void ) {
 	rconAddress = Cvar_Get ("rconAddress", "", 0);
 
 	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", CVAR_ARCHIVE_ND );
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	cl_mapAutoDownload = Cvar_Get( "cl_mapAutoDownload", "0", CVAR_ARCHIVE_ND );
-#ifdef USE_CURL_DLOPEN
+#ifdef CURL_DLL_ON_Make
 	cl_cURLLib = Cvar_Get( "cl_cURLLib", DEFAULT_CURL_LIB, 0 );
 #endif
 #endif
@@ -3937,7 +3937,7 @@ void CL_Init( void ) {
 	Cmd_AddCommand ("serverinfo", CL_Serverinfo_f );
 	Cmd_AddCommand ("systeminfo", CL_Systeminfo_f );
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	Cmd_AddCommand( "download", CL_Download_f );
 	Cmd_AddCommand( "dlmap", CL_Download_f );
 #endif
@@ -4016,7 +4016,7 @@ void CL_Shutdown( const char *finalmsg, qboolean quit ) {
 	Cmd_RemoveCommand ("systeminfo");
 	Cmd_RemoveCommand ("modelist");
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	Com_DL_Cleanup( &download );
 
 	Cmd_RemoveCommand( "download" );
@@ -4921,7 +4921,7 @@ static void CL_ShowIP_f( void ) {
 }
 
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 
 qboolean CL_Download( const char *cmd, const char *pakname, qboolean autoDownload )
 {
@@ -4989,4 +4989,4 @@ static void CL_Download_f( void )
 
 	CL_Download( Cmd_Argv( 0 ), Cmd_Argv( 1 ), qfalse );
 }
-#endif // USE_CURL
+#endif // CURL_ON_Make

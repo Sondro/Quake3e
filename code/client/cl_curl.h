@@ -38,14 +38,14 @@ extern cvar_t *cl_cURLLib;
 #define ALTERNATE_CURL_LIB "libcurl.so.3"
 #endif
 
-#ifdef USE_LOCAL_HEADERS
+#ifdef HEADERS_ON_Make
   #include "curl/curl.h"
 #else
   #include <curl/curl.h>
 #endif
 
 
-#ifdef USE_CURL_DLOPEN
+#ifdef CURL_DLL_ON_Make
 extern char* (*qcurl_version)(void);
 
 extern CURL* (*qcurl_easy_init)(void);

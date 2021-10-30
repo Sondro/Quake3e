@@ -456,7 +456,7 @@ static void DrawSkySide( image_t *image, const int mins[2], const int maxs[2] )
 	if ( tess.numIndexes )
 	{
 		GL_Bind( image );
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		tess.svars.texcoordPtr[0] = tess.texCoords[0];
 
 		vk_bind_pipeline( vk.skybox_pipeline );
@@ -776,7 +776,7 @@ void RB_DrawSun( float scale, shader_t *shader ) {
 	if ( !backEnd.skyRenderedThisView )
 		return;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	vk_update_mvp( NULL );
 #else
 	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
@@ -793,7 +793,7 @@ void RB_DrawSun( float scale, shader_t *shader ) {
 	VectorScale( vec2, size, vec2 );
 
 	// farthest depth range
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	tess.depthRange = DEPTH_RANGE_ONE;
 #else
 	qglDepthRange( sky_min_depth, 1.0 );
@@ -806,7 +806,7 @@ void RB_DrawSun( float scale, shader_t *shader ) {
 	RB_EndSurface();
 
 	// back to normal depth range
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	tess.depthRange = DEPTH_RANGE_NORMAL;
 #else
 	qglDepthRange( 0.0, 1.0 );
@@ -825,7 +825,7 @@ Other things could be stuck in here, like birds in the sky, etc
 */
 void RB_StageIteratorSky( void ) {
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( r_fastsky->integer && vk.fastSky ) {
 #else
 	if ( r_fastsky->integer ) {
@@ -846,7 +846,7 @@ void RB_StageIteratorSky( void ) {
 	// front of everything to allow developers to see how
 	// much sky is getting sucked in
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( r_showsky->integer ) {
 		tess.depthRange = DEPTH_RANGE_ZERO;
 	} else {
@@ -862,7 +862,7 @@ void RB_StageIteratorSky( void ) {
 
 	// draw the outer skybox
 	if ( tess.shader->sky.outerbox[0] && tess.shader->sky.outerbox[0] != tr.defaultImage ) {
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		DrawSkyBox( tess.shader );
 #else
 		GL_ClientState( 1, CLS_NONE );
@@ -887,7 +887,7 @@ void RB_StageIteratorSky( void ) {
 	}
 
 	// back to normal depth range
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	tess.depthRange = DEPTH_RANGE_NORMAL;
 #else
 	qglDepthRange( 0.0, 1.0 );

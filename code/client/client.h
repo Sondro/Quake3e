@@ -31,9 +31,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../cgame/cg_public.h"
 #include "../game/bg_public.h"
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 #include "cl_curl.h"
-#endif /* USE_CURL */
+#endif /* CURL_ON_Make */
 
 // file full of random crap that gets used to create cl_guid
 #define QKEY_FILE "qkey"
@@ -207,14 +207,14 @@ typedef struct {
 	char		downloadList[BIG_INFO_STRING]; // list of paks we need to download
 	qboolean	downloadRestart;	// if true, we need to do another FS_Restart because we downloaded a pak
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 	qboolean	cURLEnabled;
 	qboolean	cURLUsed;
 	qboolean	cURLDisconnected;
 	char		downloadURL[MAX_OSPATH];
 	CURL		*downloadCURL;
 	CURLM		*downloadCURLM;
-#endif /* USE_CURL */
+#endif /* CURL_ON_Make */
 
 	// demo information
 	char		demoName[MAX_OSPATH];
@@ -361,7 +361,7 @@ extern	clientStatic_t		cls;
 extern	char		cl_oldGame[MAX_QPATH];
 extern	qboolean	cl_oldGameSet;
 
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 
 extern		download_t	download;
 qboolean	Com_DL_Perform( download_t *dl );
@@ -399,7 +399,7 @@ extern	cvar_t	*cl_aviPipeFormat;
 extern	cvar_t	*cl_activeAction;
 
 extern	cvar_t	*cl_allowDownload;
-#ifdef USE_CURL
+#ifdef CURL_ON_Make
 extern	cvar_t	*cl_mapAutoDownload;
 extern	cvar_t	*cl_dlDirectory;
 #endif
@@ -607,7 +607,7 @@ void	GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned 
 void	*GL_GetProcAddress( const char *name );
 
 // Vulkan
-#ifdef USE_VULKAN_API
+#ifdef VULKAN_API_ON_Make
 void	VKimp_Init( glconfig_t *config );
 void	VKimp_Shutdown( qboolean unloadDLL );
 void	*VK_GetInstanceProcAddr( VkInstance instance, const char *name );

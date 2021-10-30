@@ -623,7 +623,7 @@ static void R_SetupProjectionZ( viewParms_t *dest )
 
 	dest->projectionMatrix[2] = 0;
 	dest->projectionMatrix[6] = 0;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 #ifdef USE_REVERSED_DEPTH
 	dest->projectionMatrix[10] = zNear / depth;
 	dest->projectionMatrix[14] = zFar * zNear / depth;
@@ -642,7 +642,7 @@ static void R_SetupProjectionZ( viewParms_t *dest )
 		float	plane2[4];
 		vec4_t q, c;
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 #ifdef USE_REVERSED_DEPTH
 		dest->projectionMatrix[10] = - zFar / depth;
 		dest->projectionMatrix[14] = - zFar * zNear / depth;
@@ -664,7 +664,7 @@ static void R_SetupProjectionZ( viewParms_t *dest )
 		q[0] = (SGN(plane2[0]) + dest->projectionMatrix[8]) / dest->projectionMatrix[0];
 		q[1] = (SGN(plane2[1]) + dest->projectionMatrix[9]) / dest->projectionMatrix[5];
 		q[2] = -1.0f;
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		q[3] = - dest->projectionMatrix[10] / dest->projectionMatrix[14];
 #else
 		q[3] = (1.0f + dest->projectionMatrix[10]) / dest->projectionMatrix[14];
@@ -673,7 +673,7 @@ static void R_SetupProjectionZ( viewParms_t *dest )
 
 		dest->projectionMatrix[2]  = c[0];
 		dest->projectionMatrix[6]  = c[1];
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 		dest->projectionMatrix[10] = c[2];
 #else
 		dest->projectionMatrix[10] = c[2] + 1.0f;
@@ -1190,7 +1190,7 @@ static qboolean R_MirrorViewBySurface( const drawSurf_t *drawSurf, int entityNum
 	}
 #endif
 
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 	if ( tess.numVertexes > 2 && r_fastsky->integer && vk.fastSky ) {
 #else
 	if ( tess.numVertexes > 2 && r_fastsky->integer ) {
@@ -1545,7 +1545,7 @@ static void R_SortDrawSurfs( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			if ( r_portalOnly->integer ) {
 				return;
 			}
-#ifdef USE_VULKAN
+#ifdef VULKAN_ON_Make
 			if ( r_fastsky->integer == 0 || !vk.fastSky ) {
 #else
 			if ( r_fastsky->integer == 0 ) {
