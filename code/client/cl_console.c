@@ -784,8 +784,8 @@ void Con_DrawSolidConsole( float frac ) {
 	//y = yf;
 
 	// draw the version number
-	SCR_DrawSmallString( cls.glconfig.vidWidth - ( ARRAY_LEN( Q3_VERSION ) ) * smallchar_width,
-		lines - smallchar_height, Q3_VERSION, ARRAY_LEN( Q3_VERSION ) - 1 );
+	SCR_DrawSmallString( cls.glconfig.vidWidth - ( ARRAY_LEN( APP_VERSION ) ) * smallchar_width,
+		lines - smallchar_height, APP_VERSION, ARRAY_LEN( APP_VERSION ) - 1 );
 
 	// draw the text
 	con.vislines = lines;

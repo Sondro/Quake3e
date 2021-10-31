@@ -2319,7 +2319,7 @@ static void CL_CheckForResend( void ) {
 
 		// for now - this will be used to inform server about q3msgboom fix
 		// this is optional key so will not trigger oversize warning
-		Info_SetValueForKey_s( info, MAX_USERINFO_LENGTH, "client", Q3_VERSION );
+		Info_SetValueForKey_s( info, MAX_USERINFO_LENGTH, "client", APP_VERSION );
 
 		if ( !notOverflowed ) {
 			Com_Printf( S_COLOR_YELLOW "WARNING: oversize userinfo, you might be not able to join remote server!\n" );
@@ -3327,12 +3327,12 @@ static void CL_InitRef( void ) {
 #define REND_ARCH_STRING ARCH_STRING
 #endif
 
-	Com_sprintf( dllName, sizeof( dllName ), RENDERER_NAME_Make "_%s_" REND_ARCH_STRING DLL_EXT, cl_renderer->string );
+	Com_sprintf( dllName, sizeof( dllName ), RENDERER_PREFIX_Make "_%s_" REND_ARCH_STRING DLL_EXT, cl_renderer->string );
 	rendererLib = FS_LoadLibrary( dllName );
 	if ( !rendererLib )
 	{
 		Cvar_ForceReset( "cl_renderer" );
-		Com_sprintf( dllName, sizeof( dllName ), RENDERER_NAME_Make "_%s_" REND_ARCH_STRING DLL_EXT, cl_renderer->string );
+		Com_sprintf( dllName, sizeof( dllName ), RENDERER_PREFIX_Make "_%s_" REND_ARCH_STRING DLL_EXT, cl_renderer->string );
 		rendererLib = FS_LoadLibrary( dllName );
 		if ( !rendererLib )
 		{

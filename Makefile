@@ -1,8 +1,10 @@
 #############################################################################
-#
-# GNU Make v0.3x+
-#
+# Include "Makefile.x" to edit below & keep Makefile as a template:
 #############################################################################
+
+-include Makefile.000
+
+#----------------------------------------------------------
 
 CLIENT_PATH_NAME        = client 
 SERVER_PATH_NAME        = ded
@@ -13,9 +15,51 @@ RENDERERV_PATH_NAME     = rendv
 CLIENT_NAME             = quake3e
 SERVER_NAME             = $(CLIENT_NAME)_$(SERVER_PATH_NAME)
 
+APP_TYPE                = games
+
 #----------------------------------------------------------
+
+ifndef APP_PATH
+APP_PATH=/usr/local/$(APP_TYPE)/$(CLIENT_NAME)
+endif
+
+ifndef CODE_PATH
+CODE_PATH=code
+endif
+
+ifndef BUILD_PATH
+BUILD_PATH=build
+endif
+
+#----------------------------------------------------------
+
+BUILD_DEBUG=$(BUILD_PATH)/debug-$(PLATFORM)-$(CPU)
+BUILD_RELEASE=$(BUILD_PATH)/release-$(PLATFORM)-$(CPU)
+
+ASM_PATH=$(CODE_PATH)/asm
+CLIENT_PATH=$(CODE_PATH)/client
+SERVER_PATH=$(CODE_PATH)/server
+RENDERER_COMMON_PATH=$(CODE_PATH)/renderercommon
+RENDERER1_PATH=$(CODE_PATH)/renderer
+RENDERER2_PATH=$(CODE_PATH)/renderer2
+RENDERERV_PATH=$(CODE_PATH)/renderervk
+SDL_PATH=$(CODE_PATH)/sdl
+
+COMMON_PATH=$(CODE_PATH)/qcommon
+UNIX_PATH=$(CODE_PATH)/unix
+WIN32_PATH=$(CODE_PATH)/win32
+BOTLIB_PATH=$(CODE_PATH)/botlib
+UI_PATH=$(CODE_PATH)/ui
+JPG_PATH=$(CODE_PATH)/libjpeg
+
+BIN_PATH=$(shell which $(1) 2> /dev/null)
+
+VERSION=$(shell grep "\#define APP_VERSION" $(COMMON_PATH)/q_shared.h | \
+  sed -e 's/.*".* \([^ ]*\)"/\1/')
+
+#==========================================================
 # ON or OFF (1 or 0):
-#----------------------------------------------------------
+#==========================================================
 
 CLIENT_ON               = 1
 SERVER_ON               = 1
@@ -36,119 +80,12 @@ APP_JPG_ON_Make         = 0
  
 #----------------------------------------------------------
 
-# (opengl, opengl2, or vulkan):
+# Default main Renderer(opengl, opengl2, or vulkan):
 RENDERER_MAIN_Make = vulkan
 
-RENDERER_NAME_Make  = $(CLIENT_NAME)
+RENDERER_PREFIX_Make  = $(CLIENT_NAME)
 
 #----------------------------------------------------------
-
-SET_PLATFORM = $(shell uname | sed -e 's/_.*//' | tr '[:upper:]' '[:lower:]' | sed -e 's/\//_/g')
-SET_CPU   = $(shell uname -m | sed -e 's/i.86/x86/' | sed -e 's/^arm.*/arm/')
-
-ifeq ($(shell uname -m),arm64)
-  SET_CPU   = aarch64
-endif
-
-ifeq ($(SET_PLATFORM),mingw32)
-  ifeq ($(SET_CPU),i386)
-    SET_CPU = x86
-  endif
-endif
-
-#----------------------------------------------------------
-
-ifeq ($(V),1)
-echo_cmd=@:
-Q=
-else
-echo_cmd=@echo
-Q=@
-endif
-
-#############################################################################
-# Include "Makefile.x" to edit below & keep Makefile as a template:
-#############################################################################
-
--include Makefile.000
-
-#----------------------------------------------------------
-
-ifeq ($(SET_PLATFORM),darwin)
-  SDL_ON_Make=1
-endif
-
-ifeq ($(SET_PLATFORM),cygwin)
-  PLATFORM=mingw32
-endif
-
-ifndef PLATFORM
-PLATFORM=$(SET_PLATFORM)
-endif
-export PLATFORM
-
-ifeq ($(PLATFORM),mingw32)
-  MINGW=1
-endif
-ifeq ($(PLATFORM),mingw64)
-  MINGW=1
-endif
-
-#----------------------------------------------------------
-
-ifeq ($(SET_CPU),i86pc)
-  SET_CPU=x86
-endif
-
-ifeq ($(SET_CPU),amd64)
-  SET_CPU=x86_64
-endif
-ifeq ($(SET_CPU),x64)
-  SET_CPU=x86_64
-endif
-
-ifndef CPU
-CPU=$(SET_CPU)
-endif
-export CPU
-
-#----------------------------------------------------------
-
-ifneq ($(PLATFORM),$(SET_PLATFORM))
-  CROSS_COMPILE=1
-else
-  CROSS_COMPILE=0
-
-  ifneq ($(CPU),$(SET_CPU))
-    CROSS_COMPILE=1
-  endif
-endif
-export CROSS_COMPILE
-
-#----------------------------------------------------------
-
-ifndef APP_PATH
-APP_PATH=/usr/local/games/$(CLIENT_NAME)
-endif
-
-ifndef MOUNT_PATH
-MOUNT_PATH=code
-endif
-
-ifndef BUILD_PATH
-BUILD_PATH=build
-endif
-
-#----------------------------------------------------------
-
-ifndef DEPENDENCIES_ON
-DEPENDENCIES_ON=1
-endif
-
-ifndef CCACHE_ON
-CCACHE_ON=0
-endif
-export CCACHE_ON
 
 ifndef HEADERS_ON_Make
 HEADERS_ON_Make=1
@@ -165,6 +102,15 @@ ifndef CURL_DLL_ON_Make
     CURL_DLL_ON_Make=1
   endif
 endif
+
+ifndef DEPENDENCIES_ON
+DEPENDENCIES_ON=1
+endif
+
+ifndef CCACHE_ON
+CCACHE_ON=0
+endif
+export CCACHE_ON
 
 #----------------------------------------------------------
 
@@ -192,30 +138,80 @@ ifneq ($(VULKAN_ON_Make),0)
   VULKAN_API_ON_Make=1
 endif
 
-#############################################################################
+#==========================================================
+# CPU & Platform:
+#==========================================================
 
-BUILD_DEBUG=$(BUILD_PATH)/debug-$(PLATFORM)-$(CPU)
-BUILD_RELEASE=$(BUILD_PATH)/release-$(PLATFORM)-$(CPU)
+SET_CPU = $(shell uname -m | sed -e 's/i.86/x86/' | sed -e 's/^arm.*/arm/')
 
-ASM_PATH=$(MOUNT_PATH)/asm
-CLIENT_PATH=$(MOUNT_PATH)/client
-SERVER_PATH=$(MOUNT_PATH)/server
-RENDERER_COMMON_PATH=$(MOUNT_PATH)/renderercommon
-RENDERER1_PATH=$(MOUNT_PATH)/renderer
-RENDERER2_PATH=$(MOUNT_PATH)/renderer2
-RENDERERV_PATH=$(MOUNT_PATH)/renderervk
-SDL_PATH=$(MOUNT_PATH)/sdl
+ifeq ($(shell uname -m),arm64)
+  SET_CPU   = aarch64
+endif
 
-COMMON_PATH=$(MOUNT_PATH)/qcommon
-UNIX_PATH=$(MOUNT_PATH)/unix
-WIN32_PATH=$(MOUNT_PATH)/win32
-BOTLIB_PATH=$(MOUNT_PATH)/botlib
-UI_PATH=$(MOUNT_PATH)/ui
-JPG_PATH=$(MOUNT_PATH)/libjpeg
+ifeq ($(SET_CPU),i86pc)
+  SET_CPU=x86
+endif
 
-BIN_PATH=$(shell which $(1) 2> /dev/null)
+ifeq ($(SET_CPU),amd64)
+  SET_CPU=x86_64
+endif
+ifeq ($(SET_CPU),x64)
+  SET_CPU=x86_64
+endif
 
 #----------------------------------------------------------
+
+SET_PLATFORM = $(shell uname | sed -e 's/_.*//' | tr '[:upper:]' '[:lower:]' | sed -e 's/\//_/g')
+
+ifeq ($(SET_PLATFORM),mingw32)
+  ifeq ($(SET_CPU),i386)
+    SET_CPU = x86
+  endif
+endif
+
+ifeq ($(SET_PLATFORM),darwin)
+  SDL_ON_Make=1
+endif
+
+ifeq ($(SET_PLATFORM),cygwin)
+  PLATFORM=mingw32
+endif
+
+#----------------------------------------------------------
+
+ifndef PLATFORM
+PLATFORM=$(SET_PLATFORM)
+endif
+export PLATFORM
+
+ifeq ($(PLATFORM),mingw32)
+  MINGW=1
+endif
+ifeq ($(PLATFORM),mingw64)
+  MINGW=1
+endif
+
+#----------------------------------------------------------
+
+ifndef CPU
+CPU=$(SET_CPU)
+endif
+export CPU
+
+#----------------------------------------------------------
+
+ifneq ($(PLATFORM),$(SET_PLATFORM))
+  CROSS_COMPILE=1
+else
+  CROSS_COMPILE=0
+
+  ifneq ($(CPU),$(SET_CPU))
+    CROSS_COMPILE=1
+  endif
+endif
+export CROSS_COMPILE
+
+#==========================================================
 
 STRIP ?= strip
 PKG_CONFIG ?= pkg-config
@@ -231,7 +227,7 @@ ifneq ($(call BIN_PATH, $(PKG_CONFIG)),)
   X11_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs x11)
 endif
 
-#Defaults for SDL/X11?
+# Defaults for SDL/X11:
 ifeq ($(X11_INCLUDE),)
 X11_INCLUDE = -I/usr/X11R6/include
 endif
@@ -242,12 +238,9 @@ ifeq ($(SDL_LIBS),)
 SDL_LIBS = -lSDL2
 endif
 
-VERSION=$(shell grep "\#define APP_VERSION" $(COMMON_PATH)/q_shared.h | \
-  sed -e 's/.*".* \([^ ]*\)"/\1/')
-
 #----------------------------------------------------------
 
-#Common VM definition:
+# Common VM:
 ifeq ($(CPU),x86_64)
   VM_ON = true
 else
@@ -265,7 +258,7 @@ ifeq ($(CPU),aarch64)
   VM_ON = true
 endif
 
-#----------------------------------------------------------
+#==========================================================
 
 BASE_CFLAGS =
 
@@ -279,7 +272,7 @@ endif
 
 ifneq ($(RENDERER_DLLS_ON_Make),0)
   BASE_CFLAGS += -DRENDERER_DLLS_ON_Make
-  BASE_CFLAGS += -DRENDERER_NAME_Make=\\\"$(RENDERER_NAME_Make)\\\"
+  BASE_CFLAGS += -DRENDERER_PREFIX_Make=\\\"$(RENDERER_PREFIX_Make)\\\"
   BASE_CFLAGS += -DRENDERER_MAIN_Make="$(RENDERER_MAIN_Make)"
 endif
 
@@ -310,12 +303,21 @@ ifeq ($(DEPENDENCIES_ON),1)
   BASE_CFLAGS += -MMD
 endif
 
+#==========================================================
+
+ifeq ($(V),1)
+echo_cmd=@:
+Q=
+else
+echo_cmd=@echo
+Q=@
+endif
+
 #----------------------------------------------------------
 
 CPU_EXT=
 
 CLIENT_EXTRA_FILES=
-
 
 #############################################################################
 # BUILD MINGW32 (Windows):
@@ -401,25 +403,25 @@ ifdef MINGW
 #----------------------------------------------------------
 
   ifeq ($(SDL_ON_Make),1)
-    BASE_CFLAGS += -DHEADERS_ON_Make=1 -I$(MOUNT_PATH)/libsdl/windows/include/SDL2
+    BASE_CFLAGS += -DHEADERS_ON_Make=1 -I$(CODE_PATH)/libsdl/windows/include/SDL2
     #CLIENT_CFLAGS += -DHEADERS_ON_Make=1
     ifeq ($(CPU),x86)
-      CLIENT_LDFLAGS += -L$(MOUNT_PATH)/libsdl/windows/mingw/lib32
+      CLIENT_LDFLAGS += -L$(CODE_PATH)/libsdl/windows/mingw/lib32
       CLIENT_LDFLAGS += -lSDL2
-      CLIENT_EXTRA_FILES += $(MOUNT_PATH)/libsdl/windows/mingw/lib32/SDL2.dll
+      CLIENT_EXTRA_FILES += $(CODE_PATH)/libsdl/windows/mingw/lib32/SDL2.dll
     else
-      CLIENT_LDFLAGS += -L$(MOUNT_PATH)/libsdl/windows/mingw/lib64
+      CLIENT_LDFLAGS += -L$(CODE_PATH)/libsdl/windows/mingw/lib64
       CLIENT_LDFLAGS += -lSDL264
-      CLIENT_EXTRA_FILES += $(MOUNT_PATH)/libsdl/windows/mingw/lib64/SDL264.dll
+      CLIENT_EXTRA_FILES += $(CODE_PATH)/libsdl/windows/mingw/lib64/SDL264.dll
     endif
   endif
 
   ifeq ($(CURL_ON_Make),1)
-    BASE_CFLAGS += -I$(MOUNT_PATH)/libcurl/windows/include
+    BASE_CFLAGS += -I$(CODE_PATH)/libcurl/windows/include
     ifeq ($(CPU),x86)
-      CLIENT_LDFLAGS += -L$(MOUNT_PATH)/libcurl/windows/mingw/lib32
+      CLIENT_LDFLAGS += -L$(CODE_PATH)/libcurl/windows/mingw/lib32
     else
-      CLIENT_LDFLAGS += -L$(MOUNT_PATH)/libcurl/windows/mingw/lib64
+      CLIENT_LDFLAGS += -L$(CODE_PATH)/libcurl/windows/mingw/lib64
     endif
     CLIENT_LDFLAGS += -lcurl -lwldap32 -lcrypt32
   endif
@@ -556,9 +558,9 @@ endif # !MINGW
 
 TARGET_CLIENT = $(CLIENT_NAME)$(CPU_EXT)$(BIN_EXT)
 
-TARGET_RENDERER1 = $(RENDERER_NAME_Make)_opengl_$(SHARED_LIB_NAME)
-TARGET_RENDERER2 = $(RENDERER_NAME_Make)_opengl2_$(SHARED_LIB_NAME)
-TARGET_RENDERER_VULKAN = $(RENDERER_NAME_Make)_vulkan_$(SHARED_LIB_NAME)
+TARGET_RENDERER1 = $(RENDERER_PREFIX_Make)_opengl_$(SHARED_LIB_NAME)
+TARGET_RENDERER2 = $(RENDERER_PREFIX_Make)_opengl2_$(SHARED_LIB_NAME)
+TARGET_RENDERER_VULKAN = $(RENDERER_PREFIX_Make)_vulkan_$(SHARED_LIB_NAME)
 
 TARGET_SERVER = $(SERVER_NAME)$(CPU_EXT)$(BIN_EXT)
 
@@ -650,6 +652,95 @@ endef
 ifndef SHARED_LIB_NAME
   SHARED_LIB_NAME=$(CPU).$(SHARED_LIB_EXT)
 endif
+
+#############################################################################
+# RULES:
+#############################################################################
+
+$(B)/client/%.o: $(ASM_PATH)/%.s
+	$(DO_AS)
+
+$(B)/client/%.o: $(CLIENT_PATH)/%.c
+	$(DO_CC)
+
+$(B)/client/%.o: $(SERVER_PATH)/%.c
+	$(DO_CC)
+
+$(B)/client/%.o: $(COMMON_PATH)/%.c
+	$(DO_CC)
+
+$(B)/client/%.o: $(BOTLIB_PATH)/%.c
+  %.o: %.c ${CODE_HEADER}
+	$(DO_BOT_CC)
+
+$(B)/libjpeg/%.o: $(JPG_PATH)/%.c
+	$(DO_CC)
+
+$(B)/client/%.o: $(SDL_PATH)/%.c
+	$(DO_CC)
+
+$(B)/rend1/%.o: $(RENDERER1_PATH)/%.c
+	$(DO_RENDERER_CC)
+
+$(B)/rend1/%.o: $(RENDERER_COMMON_PATH)/%.c
+	$(DO_RENDERER_CC)
+
+$(B)/rend1/%.o: $(COMMON_PATH)/%.c
+	$(DO_RENDERER_CC)
+
+$(B)/rend2/glsl/%.c: $(RENDERER2_PATH)/glsl/%.glsl $(STRINGIFY)
+	$(DO_REF_STR)
+
+$(B)/rend2/glsl/%.o: $(B)/renderer2/glsl/%.c
+	$(DO_RENDERER_CC)
+
+$(B)/rend2/%.o: $(RENDERER2_PATH)/%.c
+	$(DO_RENDERER_CC)
+
+$(B)/rend2/%.o: $(RENDERER_COMMON_PATH)/%.c
+	$(DO_RENDERER_CC)
+
+$(B)/rend2/%.o: $(COMMON_PATH)/%.c
+	$(DO_RENDERER_CC)
+
+$(B)/rendv/%.o: $(RENDERERV_PATH)/%.c
+	$(DO_RENDERER_CC)
+
+$(B)/rendv/%.o: $(RENDERER_COMMON_PATH)/%.c
+	$(DO_RENDERER_CC)
+
+$(B)/rendv/%.o: $(COMMON_PATH)/%.c
+	$(DO_RENDERER_CC)
+
+$(B)/client/%.o: $(UNIX_PATH)/%.c
+	$(DO_CC)
+
+$(B)/client/%.o: $(WIN32_PATH)/%.c
+	$(DO_CC)
+
+$(B)/client/%.o: $(WIN32_PATH)/%.rc
+	$(DO_WINDRES)
+
+$(B)/$(SERVER_PATH_NAME)/%.o: $(ASM_PATH)/%.s
+	$(DO_AS)
+
+$(B)/$(SERVER_PATH_NAME)/%.o: $(SERVER_PATH)/%.c
+	$(DO_DED_CC)
+
+$(B)/$(SERVER_PATH_NAME)/%.o: $(COMMON_PATH)/%.c
+	$(DO_DED_CC)
+
+$(B)/$(SERVER_PATH_NAME)/%.o: $(BOTLIB_PATH)/%.c
+	$(DO_BOT_CC)
+
+$(B)/$(SERVER_PATH_NAME)/%.o: $(UNIX_PATH)/%.c
+	$(DO_DED_CC)
+
+$(B)/$(SERVER_PATH_NAME)/%.o: $(WIN32_PATH)/%.c
+	$(DO_DED_CC)
+
+$(B)/$(SERVER_PATH_NAME)/%.o: $(WIN32_PATH)/%.rc
+	$(DO_WINDRES)
 
 #############################################################################
 # TARGETS:
@@ -795,8 +886,8 @@ ifneq ($(RENDERER_DLLS_ON_Make), 0)
     $(B)/rend2/q_math.o
 endif
 
-RENDERER2_FX_OBJS = $(B)/rend2/glsl/*.o
-
+#RENDERER2_FX_OBJS = $(B)/rend2/glsl/*.o
+RENDERER2_FX_OBJS = $(wildcard $(B)/rend2/glsl/*.glsl)
 
 RENDERER_VULKAN_OBJS = $(wildcard $(RENDERERV_PATH)/*.c)
 
@@ -1011,17 +1102,17 @@ $(B)/$(TARGET_CLIENT): $(OBJ)
 	$(Q)$(CC) -o $@ $(OBJ) $(CLIENT_LDFLAGS) \
 		$(LDFLAGS)
 
-#----------------------------------------------------------
-
+#===========================================================
 # Modular renderers:
+#===========================================================
 
 $(B)/$(TARGET_RENDERER1): $(RENDERER1_OBJS)
 	$(echo_cmd) "LD $@"
 	$(Q)$(CC) -o $@ $(RENDERER1_OBJS) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
 
-$(STRINGIFY): $(MOUNT_PATH)/renderer2/stringify.c
+$(STRINGIFY): $(CODE_PATH)/renderer2/stringify.c
 	$(echo_cmd) "LD $@"
-	$(Q)$(CC) -o $@ $(MOUNT_PATH)/renderer2/stringify.c $(LDFLAGS)
+	$(Q)$(CC) -o $@ $(CODE_PATH)/renderer2/stringify.c $(LDFLAGS)
 
 $(B)/$(TARGET_RENDERER2): $(RENDERER2_OBJS) $(RENDERER2_FX_OBJS)
 	$(echo_cmd) "LD $@"
@@ -1032,7 +1123,7 @@ $(B)/$(TARGET_RENDERER_VULKAN): $(RENDERER_VULKAN_OBJS)
 	$(Q)$(CC) -o $@ $(RENDERER_VULKAN_OBJS) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
 
 #############################################################################
-# DEDICATED SERVER
+# DEDICATED SERVER:
 #############################################################################
 
 DOBJ = \
@@ -1135,96 +1226,6 @@ $(B)/$(TARGET_SERVER): $(DOBJ)
 	$(Q)$(CC) -o $@ $(DOBJ) $(LDFLAGS)
 
 #############################################################################
-# CLIENT/SERVER RULES
-#############################################################################
-
-
-$(B)/client/%.o: $(ASM_PATH)/%.s
-	$(DO_AS)
-
-$(B)/client/%.o: $(CLIENT_PATH)/%.c
-	$(DO_CC)
-
-$(B)/client/%.o: $(SERVER_PATH)/%.c
-	$(DO_CC)
-
-$(B)/client/%.o: $(COMMON_PATH)/%.c
-	$(DO_CC)
-
-$(B)/client/%.o: $(BOTLIB_PATH)/%.c
-  %.o: %.c ${CODE_HEADER}
-	$(DO_BOT_CC)
-
-$(B)/libjpeg/%.o: $(JPG_PATH)/%.c
-	$(DO_CC)
-
-$(B)/client/%.o: $(SDL_PATH)/%.c
-	$(DO_CC)
-
-$(B)/rend1/%.o: $(RENDERER1_PATH)/%.c
-	$(DO_RENDERER_CC)
-
-$(B)/rend1/%.o: $(RENDERER_COMMON_PATH)/%.c
-	$(DO_RENDERER_CC)
-
-$(B)/rend1/%.o: $(COMMON_PATH)/%.c
-	$(DO_RENDERER_CC)
-
-$(B)/rend2/glsl/%.c: $(RENDERER2_PATH)/glsl/%.glsl $(STRINGIFY)
-	$(DO_REF_STR)
-
-$(B)/rend2/glsl/%.o: $(B)/renderer2/glsl/%.c
-	$(DO_RENDERER_CC)
-
-$(B)/rend2/%.o: $(RENDERER2_PATH)/%.c
-	$(DO_RENDERER_CC)
-
-$(B)/rend2/%.o: $(RENDERER_COMMON_PATH)/%.c
-	$(DO_RENDERER_CC)
-
-$(B)/rend2/%.o: $(COMMON_PATH)/%.c
-	$(DO_RENDERER_CC)
-
-$(B)/rendv/%.o: $(RENDERERV_PATH)/%.c
-	$(DO_RENDERER_CC)
-
-$(B)/rendv/%.o: $(RENDERER_COMMON_PATH)/%.c
-	$(DO_RENDERER_CC)
-
-$(B)/rendv/%.o: $(COMMON_PATH)/%.c
-	$(DO_RENDERER_CC)
-
-$(B)/client/%.o: $(UNIX_PATH)/%.c
-	$(DO_CC)
-
-$(B)/client/%.o: $(WIN32_PATH)/%.c
-	$(DO_CC)
-
-$(B)/client/%.o: $(WIN32_PATH)/%.rc
-	$(DO_WINDRES)
-
-$(B)/$(SERVER_PATH_NAME)/%.o: $(ASM_PATH)/%.s
-	$(DO_AS)
-
-$(B)/$(SERVER_PATH_NAME)/%.o: $(SERVER_PATH)/%.c
-	$(DO_DED_CC)
-
-$(B)/$(SERVER_PATH_NAME)/%.o: $(COMMON_PATH)/%.c
-	$(DO_DED_CC)
-
-$(B)/$(SERVER_PATH_NAME)/%.o: $(BOTLIB_PATH)/%.c
-	$(DO_BOT_CC)
-
-$(B)/$(SERVER_PATH_NAME)/%.o: $(UNIX_PATH)/%.c
-	$(DO_DED_CC)
-
-$(B)/$(SERVER_PATH_NAME)/%.o: $(WIN32_PATH)/%.c
-	$(DO_DED_CC)
-
-$(B)/$(SERVER_PATH_NAME)/%.o: $(WIN32_PATH)/%.rc
-	$(DO_WINDRES)
-
-#############################################################################
 # TOOLS:
 #############################################################################
 
@@ -1276,7 +1277,7 @@ wipe-build: clean
 	@rm -rf $(BUILD_PATH)
 
 #############################################################################
-# KEEP FILES (DEPENDENCIES)
+# KEEP FILES (DEPENDENCIES):
 #############################################################################
 
 KEEP=$(shell find . -name '*.d')
