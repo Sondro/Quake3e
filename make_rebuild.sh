@@ -1,5 +1,5 @@
 cd .
 #!/bin/bash
-make
+make -B
 
 read -p "Press any key to continue." x     

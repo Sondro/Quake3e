@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/bg_public.h"
 
 #ifdef CURL_ON_Make
-#include "cl_curl.h"
+#include "./cl_curl.h"
 #endif /* CURL_ON_Make */
 
 // file full of random crap that gets used to create cl_guid

@@ -677,7 +677,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\client\cl_curl.h"
+				RelativePath="..\..\client\curlh\cl_curl.h"
 				>
 			</File>
 			<File

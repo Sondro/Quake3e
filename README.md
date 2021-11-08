@@ -147,9 +147,9 @@ Several Makefile options are available for linux/mingw/macos builds:
 
 `VULKAN_ON_Make=1` - build vulkan modular renderer, enabled by default
 
-`USE_OPENGL=1` - build opengl modular renderer, enabled by default
+`OPENGL_ON=1` - build opengl modular renderer, enabled by default
 
-`USE_OPENGL2=0` - build opengl2 modular renderer, disabled by default
+`OPENGL2_ON=0` - build opengl2 modular renderer, disabled by default
 
 `RENDERER_DLLS_ON_Make=1` - do not link single renderer into client binary, compile all enabled renderers as dynamic libraries and allow to switch them on the fly via `\cl_renderer` cvar, enabled by default
 
