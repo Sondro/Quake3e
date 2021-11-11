@@ -5,5 +5,5 @@ output/
 *.user
 cmake-*
 .idea
-.o
-.d
+*.o
+*.d
