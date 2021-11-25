@@ -1171,7 +1171,8 @@ $(B)/$(TARGET_HOST): $(HOST_OBJ)
 # TOOLS:
 #############################################################################
 
-install: release 
+install: release
+	@echo "'install' = compile 'release' or 'debug' target ('release' by default):"
 	@for i in $(TARGETS); do 
 		if [ -f $(BUILD_RELEASE)$$i ]; then 
 			$(INSTALL) -D -m 0755 "$(BUILD_RELEASE)/$$i" "$(APP_PATH)$$i";
@@ -1182,7 +1183,7 @@ install: release
 #==========================================================
 
 clean: clean-object
-	@echo "'clean' all TARGETS in project:"
+	@echo "'clean' = remove all TARGETS in project:"
 	@rm -rf $(BUILD_RELEASE)/$(TARGET_HOST)
 	@rm -rf $(BUILD_RELEASE)/$(TARGET_USER)
 	@rm -rf $(BUILD_RELEASE)/$(TARGET_RENDERER_VULKAN)
@@ -1199,7 +1200,7 @@ clean: clean-object
 #----------------------------------------------------------
 
 clean-object:
-	@echo "'clean-object' all *.d & *.o project:" 
+	@echo "'clean-object' = remove all *.d & *.o in project:" 
 	@rm -rf $(DEPENDS) $(ALL_OBJS)
 
 #==========================================================
@@ -1213,28 +1214,28 @@ wipe: wipe-debug wipe-release
 #----------------------------------------------------------
 
 wipe-object:
-	@echo "'wipe-object':" 
+	@echo "'wipe-object' = remove all object folders:" 
 	@rm -rf $(BUILD_PATH)/$(DEBUG_BPATH_NAME)$(OBJECT_SUFFIX)
 	@rm -rf $(BUILD_PATH)/$(RELEASE_BPATH_NAME)$(OBJECT_SUFFIX)
 
 #----------------------------------------------------------
 
 wipe-debug:
-	@echo "'wipe-debug':" 
+	@echo "'wipe-debug' = remove debug folder & debug object folder:" 
 	@rm -rf $(BUILD_DEBUG)
 	@rm -rf $(BUILD_PATH)/$(DEBUG_BPATH_NAME)$(OBJECT_SUFFIX)
 
 #----------------------------------------------------------
 
 wipe-release:
-	@echo "'wipe-release':" 
+	@echo "'wipe-release' = remove release folder & release object folder:" 
 	@rm -rf $(BUILD_RELEASE)
 	@rm -rf $(BUILD_PATH)/$(RELEASE_BPATH_NAME)$(OBJECT_SUFFIX)
 
 #----------------------------------------------------------
 
 wipe-build: 
-	@echo "'wipe-build':" 
+	@echo "'wipe-build' = remove build folder:" 
 	@rm -rf $(BUILD_PATH)
 
 #############################################################################
