@@ -173,20 +173,20 @@ Discord channel: https://discordapp.com/invite/X3Exs4C
 * https://github.com/OpenArena/engine
 
 ## Credits
-id Softare
+
+* id Softare
 
 ### Renderer
 
-ioq3 cr3w
-Kenny
-ec-
+* ioq3 cr3w
+* Kenny
+* ec-
 
 ### Makefile
 
-'98 by Zoid <zoid@idsoftware.com>
-
-Bernd Kreimeier
-Ryan C. Gordon
-Rafael Barrero
-ioq3 cr3w
-ec-
+* '98 by Zoid <zoid@idsoftware.com>
+* Bernd Kreimeier
+* Ryan C. Gordon
+* Rafael Barrero
+* ioq3 cr3w
+* ec-
