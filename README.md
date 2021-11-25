@@ -171,3 +171,22 @@ Discord channel: https://discordapp.com/invite/X3Exs4C
 * https://github.com/ioquake/ioq3
 * https://github.com/kennyalive/Quake-III-Arena-Kenny-Edition
 * https://github.com/OpenArena/engine
+
+## Credits
+id Softare
+
+### Renderer
+
+ioq3 cr3w
+Kenny
+ec-
+
+### Makefile
+
+'98 by Zoid <zoid@idsoftware.com>
+
+Bernd Kreimeier
+Ryan C. Gordon
+Rafael Barrero
+ioq3 cr3w
+ec-

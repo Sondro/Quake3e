@@ -97,10 +97,10 @@
     <ClCompile Include="..\..\qcommon\puff.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\qcommon\q_math.c">
+    <ClCompile Include="..\..\qcommon\math\q_math.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\qcommon\q_shared.c">
+    <ClCompile Include="..\..\qcommon\math\q_shared.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\client\snd_adpcm.c">

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(${CLIENT_NAME})
+project(${USER_NAME})
 
 
 option(SDL_ON_Make "" ON)
@@ -17,11 +17,11 @@ aux_source_directory(code/libjpeg JPG_CODE)
 add_library(jpeg ${JPG_CODE})
 
 
-aux_source_directory(code/server SERVER_CODE)
-list(REMOVE_ITEM SERVER_CODE code/server/sv_rankings.c)
-add_library(server ${SERVER_CODE})
-add_library(server_${SERVER_NAME} ${SERVER_CODE})
-target_compile_definitions(server_${SERVER_NAME} PUBLIC -DDEDICATED)
+aux_source_directory(code/server HOST_CODE)
+list(REMOVE_ITEM HOST_CODE code/server/sv_rankings.c)
+add_library(server ${HOST_CODE})
+add_library(server_${HOST_NAME} ${HOST_CODE})
+target_compile_definitions(server_${HOST_NAME} PUBLIC -DDEDICATED)
 
 
 aux_source_directory(code/qcommon COMMON_CODE)
@@ -30,8 +30,8 @@ list(FILTER COMMON_CODE EXCLUDE REGEX ".*vm_[alx].*.c")
 
 add_library(qcommon ${COMMON_CODE} ${VM_SRC})
 target_link_libraries(qcommon PRIVATE server)
-add_library(qcommon_${SERVER_NAME} ${COMMON_CODE} ${VM_SRC})
-target_link_libraries(qcommon_${SERVER_NAME} PUBLIC server_${SERVER_NAME})
+add_library(qcommon_${HOST_NAME} ${COMMON_CODE} ${VM_SRC})
+target_link_libraries(qcommon_${HOST_NAME} PUBLIC server_${HOST_NAME})
 
 
 aux_source_directory(code/botlib BOTLIB_CODE)
@@ -39,11 +39,11 @@ add_library(botlib ${BOTLIB_CODE})
 target_compile_definitions(botlib PRIVATE -DBOTLIB)
 
 
-aux_source_directory(code/client CLIENT_CODE)
+aux_source_directory(code/client USER_CODE)
 if(NOT CURL_ON_Make)
-    list(REMOVE_ITEM CLIENT_CODE code/client/cl_curl.c)
+    list(REMOVE_ITEM USER_CODE code/client/app_curl/cl_curl.c)
 endif(NOT CURL_ON_Make)
-add_library(client ${CLIENT_CODE})
+add_library(client ${USER_CODE})
 target_link_libraries(client qcommon jpeg)
 if(APP_JPG_ON_Make)
     target_compile_definitions(client PRIVATE -DAPP_JPG_ON_Make)
@@ -139,24 +139,24 @@ else()
 endif()
 
 
-add_executable(${CLIENT_NAME} ${EXE_TYPE} ${VM_CODE} ${APP_CODE} ${APP_UI_CODE})
-target_link_libraries(${CLIENT_NAME} client botlib)
+add_executable(${USER_NAME} ${EXE_TYPE} ${VM_CODE} ${APP_CODE} ${APP_UI_CODE})
+target_link_libraries(${USER_NAME} client botlib)
 
 if(SDL_ON_Make)
-    target_link_libraries(${CLIENT_NAME} app_sdl)
+    target_link_libraries(${USER_NAME} app_sdl)
 endif(SDL_ON_Make)
 
 if(VULKAN_ON_Make)
-    target_link_libraries(${CLIENT_NAME} renderer_vk)
-    target_compile_definitions(${CLIENT_NAME} PRIVATE -DVULKAN_API_ON_Make)
+    target_link_libraries(${USER_NAME} renderer_vk)
+    target_compile_definitions(${USER_NAME} PRIVATE -DVULKAN_API_ON_Make)
 else()
-    target_link_libraries(${CLIENT_NAME} renderer)
+    target_link_libraries(${USER_NAME} renderer)
 endif(VULKAN_ON_Make)
 
-add_executable(${CLIENT_NAME}_${SERVER_NAME} ${EXE_TYPE} ${VM_CODE} ${APP_CODE})
-target_link_libraries(${CLIENT_NAME}_${SERVER_NAME} qcommon_${SERVER_NAME} botlib)
+add_executable(${USER_NAME}_${HOST_NAME} ${EXE_TYPE} ${VM_CODE} ${APP_CODE})
+target_link_libraries(${USER_NAME}_${HOST_NAME} qcommon_${HOST_NAME} botlib)
 
 if(WIN32)
-    target_link_libraries(${CLIENT_NAME} winmm comctl32 ws2_32)
-    target_link_libraries(${CLIENT_NAME}-server winmm comctl32 ws2_32)
+    target_link_libraries(${USER_NAME} winmm comctl32 ws2_32)
+    target_link_libraries(${USER_NAME}-server winmm comctl32 ws2_32)
 endif(WIN32)

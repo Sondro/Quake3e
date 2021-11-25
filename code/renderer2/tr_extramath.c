@@ -19,7 +19,7 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// tr_extramath.c - extra math needed by the renderer not in qmath.c
+// tr_extramath.c - extra math needed by the renderer not in q_math.c
 
 #include "tr_local.h"
 

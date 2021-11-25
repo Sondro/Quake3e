@@ -6,103 +6,119 @@
 
 #----------------------------------------------------------
 
-CLIENT_PATH_NAME         = client
-SERVER_PATH_NAME         = server
+USER_PATH_NAME           = client
+HOST_PATH_NAME           = server
 
-CLIENT_BPATH_NAME        = client
-SERVER_BPATH_NAME        = ded
+USER_BPATH_NAME          = client
+HOST_BPATH_NAME          = ded
 REND1_BPATH_NAME         = rend1
 REND2_BPATH_NAME         = rend2
 RENDV_BPATH_NAME         = rendv
 
-CLIENT_NAME             = quake3e
-SERVER_NAME             = $(CLIENT_NAME)_$(SERVER_BPATH_NAME)
+OBJECT_SUFFIX            = _-_obj
 
-APP_TYPE                = games
+DEBUG_BPATH_NAME         = debug-$(PLATFORM)-$(CPU)
+RELEASE_BPATH_NAME       = release-$(PLATFORM)-$(CPU)
+
+USER_NAME                = quake3e
+HOST_NAME                = $(USER_NAME)_$(HOST_BPATH_NAME)
+
+APP_TYPE                 = games
 
 #----------------------------------------------------------
 
 ifndef APP_PATH
-APP_PATH=/usr/local/$(APP_TYPE)/$(CLIENT_NAME)
+  APP_PATH = /usr/local/$(APP_TYPE)/$(USER_NAME)
 endif
 
 ifndef CODE_PATH
-CODE_PATH=code
+  CODE_PATH = code
 endif
 
 ifndef BUILD_PATH
-BUILD_PATH=build
+  BUILD_PATH = build
 endif
 
 #----------------------------------------------------------
 
-BUILD_DEBUG=$(BUILD_PATH)/debug-$(PLATFORM)-$(CPU)
-BUILD_RELEASE=$(BUILD_PATH)/release-$(PLATFORM)-$(CPU)
+BUILD_RELEASE = $(BUILD_PATH)/$(RELEASE_BPATH_NAME)
+BUILD_DEBUG = $(BUILD_PATH)/$(DEBUG_BPATH_NAME)
 
-ASM_PATH=$(CODE_PATH)/asm
-ASM_X86_PATH=$(ASM_PATH)/x86
+HOST_PATH = $(CODE_PATH)/server
+USER_PATH = $(CODE_PATH)/client
 
-CLIENT_PATH=$(CODE_PATH)/client
-APP_CURL_PATH = $(CLIENT_PATH)/app_curl
+APP_CURL_PATH = $(USER_PATH)/app_curl
+ASM_PATH = $(CODE_PATH)/asm
+ASM_X86_PATH = $(ASM_PATH)/x86
 
-SERVER_PATH=$(CODE_PATH)/server
+COMMON_PATH = $(CODE_PATH)/qcommon
+MATH_PATH = $(COMMON_PATH)/math
+MATH_GFX_PATH = $(MATH_PATH)/gfx
+VM_X86_PATH = $(COMMON_PATH)/vm/x86
+VM_X86_64_PATH = $(VM_X86_PATH)
+#VM_X86_64_PATH = $(COMMON_PATH)/vm/x86_64
+VM_ARM_PATH = $(COMMON_PATH)/vm/arm
+VM_AARCH64_PATH = $(COMMON_PATH)/vm/aarch64
 
-COMMON_PATH=$(CODE_PATH)/qcommon
-RENDERER_PATH=$(COMMON_PATH)/renderer
-VM_X86_PATH=$(COMMON_PATH)/vm/x86
-VM_X86_64_PATH=$(VM_X86_PATH)
-#VM_X86_64_PATH=$(COMMON_PATH)/vm/x86_64
-VM_ARM_PATH=$(COMMON_PATH)/vm/arm
-VM_AARCH64_PATH=$(COMMON_PATH)/vm/aarch64
-
-UNIX_PATH=$(CODE_PATH)/unix
+UNIX_PATH = $(CODE_PATH)/unix
 UNIX_SDL_OFF_PATH = $(UNIX_PATH)/sdl/off
 UNIX_VK_ON_PATH = $(UNIX_PATH)/vk/on
 
-WIN32_PATH=$(CODE_PATH)/win32
-WIN32_SDL_ON_PATH=$(WIN32_PATH)/sdl/on
-WIN32_SDL_OFF_PATH=$(WIN32_PATH)/sdl/off
-WIN32_VK_ON_PATH=$(WIN32_PATH)/vk/on
-    
-SDL_PATH=$(CODE_PATH)/sdl
-BOTLIB_PATH=$(CODE_PATH)/botlib
-UI_PATH=$(CODE_PATH)/ui
-JPG_PATH=$(CODE_PATH)/libjpeg
+WIN32_PATH = $(CODE_PATH)/win32
+WIN32_SDL_ON_PATH = $(WIN32_PATH)/sdl/on
+WIN32_SDL_OFF_PATH = $(WIN32_PATH)/sdl/off
+WIN32_VK_ON_PATH = $(WIN32_PATH)/vk/on
 
-RENDERER_COMMON_PATH=$(CODE_PATH)/renderercommon
-RENDERER1_PATH=$(CODE_PATH)/renderer
-RENDERER2_PATH=$(CODE_PATH)/renderer2
-RENDERERV_PATH=$(CODE_PATH)/renderervk
+SDL_PATH = $(CODE_PATH)/sdl
+BOTLIB_PATH = $(CODE_PATH)/botlib
+UI_PATH = $(CODE_PATH)/ui
+JPG_PATH = $(CODE_PATH)/libjpeg
+
+RENDERER_COMMON_PATH = $(CODE_PATH)/renderercommon
+RENDERER_FONT_PATH = $(RENDERER_COMMON_PATH)/font
+RENDERER1_PATH = $(CODE_PATH)/renderer
+RENDERER2_PATH = $(CODE_PATH)/renderer2
+RENDERER2_FX_PATH = $(RENDERER2_PATH)/glsl
+RENDERERV_PATH = $(CODE_PATH)/renderervk
 
 RENDERER2_STRING_PATH = $(RENDERER2_PATH)/string
 
 #----------------------------------------------------------
 
-CLIENT_BPATH=$(B)/$(CLIENT_BPATH_NAME)
-SERVER_BPATH=$(B)/$(SERVER_BPATH_NAME)
-BOTLIB_BPATH=$(B)/botlib
+ifeq ($(B),$(BUILD_DEBUG))
+ OBJECT_BPATH_NAME = $(DEBUG_BPATH_NAME)$(OBJECT_SUFFIX)
+else
+ OBJECT_BPATH_NAME = $(RELEASE_BPATH_NAME)$(OBJECT_SUFFIX)
+endif
 
-REND1_BPATH=$(B)/$(REND1_BPATH_NAME)
-REND2_BPATH=$(B)/$(REND2_BPATH_NAME)
-RENDV_BPATH=$(B)/$(RENDV_BPATH_NAME)
+OBJECT_BPATH = $(BUILD_PATH)/$(OBJECT_BPATH_NAME)
 
-BIN_PATH=$(shell which $(1) 2> /dev/null)
-VERSION=$(shell grep "\#define APP_VERSION" $(COMMON_PATH)/q_shared.h | \
+USER_BPATH = $(OBJECT_BPATH)/$(USER_BPATH_NAME)
+HOST_BPATH = $(OBJECT_BPATH)/$(HOST_BPATH_NAME)
+BOTLIB_BPATH = $(OBJECT_BPATH)/botlib
+JPG_BPATH = $(OBJECT_BPATH)/libjpeg
+REND1_BPATH = $(OBJECT_BPATH)/$(REND1_BPATH_NAME)
+REND2_BPATH = $(OBJECT_BPATH)/$(REND2_BPATH_NAME)
+REND2_FX_BPATH = $(REND2_BPATH)/glsl
+RENDV_BPATH = $(OBJECT_BPATH)/$(RENDV_BPATH_NAME)
+
+BINARY_PATH = $(shell which $(1) 2> /dev/null)
+VERSION = $(shell grep "\#define APP_VERSION" $(COMMON_PATH)/q_shared.h | \
   sed -e 's/.*".* \([^ ]*\)"/\1/')
 
 #==========================================================
 # ON or OFF (1 or 0):
 #==========================================================
 
-CLIENT_ON               = 1
-SERVER_ON               = 0
+USER_ON                 = 1
+HOST_ON                 = 1
 
 OPENGL1_ON              = 1
 OPENGL2_ON              = 1
 
 VULKAN_ON_Make          = 1
 VULKAN_API_ON_Make      = 1
- 
+
 RENDERER_DLLS_ON_Make   = 1
 
 SDL_ON_Make             = 1
@@ -110,66 +126,86 @@ CURL_ON_Make            = 1
 
 HEADERS_ON_Make         = 0
 APP_JPG_ON_Make         = 0
- 
+
 #----------------------------------------------------------
 
-# Default main Renderer(opengl, opengl2, or vulkan):
+# Main Renderer(vulkan, opengl2, opengl):
 RENDERER_MAIN_Make = vulkan
 
-RENDERER_PREFIX_Make  = $(CLIENT_NAME)
+RENDERER_PREFIX_Make = $(USER_NAME)
 
-#----------------------------------------------------------
+#==========================================================
+# FIX SETTINGS:
+#==========================================================
 
 ifndef HEADERS_ON_Make
-HEADERS_ON_Make=1
+  HEADERS_ON_Make = 1
 endif
 
 ifndef CURL_ON_Make
-CURL_ON_Make=1
+  CURL_ON_Make = 1
 endif
 
 ifndef CURL_DLL_ON_Make
   ifdef MINGW
-    CURL_DLL_ON_Make=0
+    CURL_DLL_ON_Make = 0
   else
-    CURL_DLL_ON_Make=1
+    CURL_DLL_ON_Make = 1
   endif
 endif
 
-ifndef DEPENDENCIES_ON
-DEPENDENCIES_ON=1
+ifndef DEPENDSENCIES_ON
+  DEPENDSENCIES_ON = 1
 endif
 
 ifndef CCACHE_ON
-CCACHE_ON=0
+  CCACHE_ON = 0
 endif
 export CCACHE_ON
 
 #----------------------------------------------------------
 
-ifeq ($(RENDERER_DLLS_ON_Make),0)
-  ifeq ($(RENDERER_MAIN_Make),opengl)
-    OPENGL1_ON=1
-    OPENGL2_ON=0
-    VULKAN_ON_Make=0
-    VULKAN_API_ON_Make=0
-  endif
-  ifeq ($(RENDERER_MAIN_Make),opengl2)
-    OPENGL1_ON=0
-    OPENGL2_ON=1
-    VULKAN_ON_Make=0
-    VULKAN_API_ON_Make=0
-  endif
-  ifeq ($(RENDERER_MAIN_Make),vulkan)
-    OPENGL1_ON=0
-    OPENGL2_ON=0
-    VULKAN_ON_Make=1
-  endif
-endif
+ifeq ($(USER_ON),1)
 
-ifneq ($(VULKAN_ON_Make),0)
-  VULKAN_API_ON_Make=1
-endif
+  ifeq ($(RENDERER_DLLS_ON_Make),0)
+    ifeq ($(RENDERER_MAIN_Make),vulkan)
+      OPENGL1_ON         = 0
+      OPENGL2_ON         = 0
+      VULKAN_ON_Make     = 1
+    else
+    ifeq ($(RENDERER_MAIN_Make),opengl2)
+      OPENGL1_ON         = 0
+      OPENGL2_ON         = 1
+      VULKAN_ON_Make     = 0
+      VULKAN_API_ON_Make = 0
+    else
+    ifeq ($(RENDERER_MAIN_Make),opengl)
+      OPENGL1_ON         = 1
+      OPENGL2_ON         = 0
+      VULKAN_ON_Make     = 0
+      VULKAN_API_ON_Make = 0
+    endif
+    endif
+    endif
+  else
+    ifeq ($(RENDERER_MAIN_Make),vulkan)
+      VULKAN_ON_Make     = 1
+    else
+    ifeq ($(RENDERER_MAIN_Make),opengl2)
+      OPENGL2_ON         = 1
+    else
+    ifeq ($(RENDERER_MAIN_Make),opengl)
+      OPENGL1_ON         = 1
+    endif
+    endif
+    endif
+  endif
+
+  ifeq ($(VULKAN_ON_Make),1)
+    VULKAN_API_ON_Make   = 1
+  endif
+
+endif # =USER_ON
 
 #==========================================================
 # CPU & Platform:
@@ -178,18 +214,18 @@ endif
 SET_CPU = $(shell uname -m | sed -e 's/i.86/x86/' | sed -e 's/^arm.*/arm/')
 
 ifeq ($(shell uname -m),arm64)
-  SET_CPU   = aarch64
+  SET_CPU = aarch64
 endif
 
 ifeq ($(SET_CPU),i86pc)
-  SET_CPU=x86
+  SET_CPU = x86
 endif
 
 ifeq ($(SET_CPU),amd64)
-  SET_CPU=x86_64
+  SET_CPU = x86_64
 endif
 ifeq ($(SET_CPU),x64)
-  SET_CPU=x86_64
+  SET_CPU = x86_64
 endif
 
 #----------------------------------------------------------
@@ -203,17 +239,17 @@ ifeq ($(SET_PLATFORM),mingw32)
 endif
 
 ifeq ($(SET_PLATFORM),darwin)
-  SDL_ON_Make=1
+  SDL_ON_Make = 1
 endif
 
 ifeq ($(SET_PLATFORM),cygwin)
-  PLATFORM=mingw32
+  PLATFORM = mingw32
 endif
 
 #----------------------------------------------------------
 
 ifndef PLATFORM
-PLATFORM=$(SET_PLATFORM)
+  PLATFORM = $(SET_PLATFORM)
 endif
 export PLATFORM
 
@@ -227,33 +263,33 @@ endif
 #----------------------------------------------------------
 
 ifndef CPU
-CPU=$(SET_CPU)
+  CPU = $(SET_CPU)
 endif
 export CPU
 
 #----------------------------------------------------------
 
-ifneq ($(PLATFORM),$(SET_PLATFORM))
-  CROSS_COMPILE=1
-else
-  CROSS_COMPILE=0
-
+ifeq ($(PLATFORM),$(SET_PLATFORM))
   ifneq ($(CPU),$(SET_CPU))
-    CROSS_COMPILE=1
-  endif
-endif
+    CROSS_COMPILE = 1
+  endif # CPU != SET_CPU
+  else
+    CROSS_COMPILE = 0
+  
+endif # PLATFORM == SET_PLATFORM
+
 export CROSS_COMPILE
 
 #==========================================================
 
 STRIP ?= strip
 PKG_CONFIG ?= pkg-config
-INSTALL=install
-MKDIR=mkdir
+INSTALL = install
+MKDIR = mkdir
 
 #----------------------------------------------------------
 
-ifneq ($(call BIN_PATH, $(PKG_CONFIG)),)
+ifneq ($(call BINARY_PATH, $(PKG_CONFIG)),)
   SDL_CODE_HEADERS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags-only-I sdl2)
   SDL_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs sdl2)
   X11_CODE_HEADERS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags-only-I x11)
@@ -271,43 +307,44 @@ ifeq ($(SDL_LIBS),)
   SDL_LIBS = -lSDL2
 endif
 
-#----------------------------------------------------------
+#==========================================================
+# VM:
+#==========================================================
 
-# Common VM:
 ifeq ($(CPU),x86_64)
-  VM_ON = true
+  VM_ON = 1
 else
 ifeq ($(CPU),x86)
-  VM_ON = true
+  VM_ON = 1
 else
-  VM_ON = false
+  VM_ON = 0
 endif
-endif
+endif # CPU == x86_64
 
 ifeq ($(CPU),arm)
-  VM_ON = true
+  VM_ON = 1
 endif
 ifeq ($(CPU),aarch64)
-  VM_ON = true
+  VM_ON = 1
 endif
 
 #==========================================================
-
 BASE_CFLAGS =
+#==========================================================
 
 ifeq ($(APP_JPG_ON_Make),1)
   BASE_CFLAGS += -DAPP_JPG_ON_Make
-endif
+endif # =APP_JPG_ON_Make
 
-ifneq ($(VM_ON),true)
+ifeq ($(VM_ON),0)
   BASE_CFLAGS += -DVM_OFF_CFlags
-endif
+endif # !VM_ON
 
-ifneq ($(RENDERER_DLLS_ON_Make),0)
+ifeq ($(RENDERER_DLLS_ON_Make),1)
   BASE_CFLAGS += -DRENDERER_DLLS_ON_Make
   BASE_CFLAGS += -DRENDERER_PREFIX_Make=\\\"$(RENDERER_PREFIX_Make)\\\"
   BASE_CFLAGS += -DRENDERER_MAIN_Make="$(RENDERER_MAIN_Make)"
-endif
+endif # =RENDERER_DLLS_ON_Make
 
 ifdef MAIN_PATH
   BASE_CFLAGS += -DMAIN_PATH=\\\"$(MAIN_PATH)\\\"
@@ -315,7 +352,7 @@ endif
 
 ifeq ($(HEADERS_ON_Make),1)
   BASE_CFLAGS += -DHEADERS_ON_Make=1
-endif
+endif # =HEADERS_ON_Make
 
 ifeq ($(CURL_ON_Make),1)
   BASE_CFLAGS += -DCURL_ON_Make
@@ -324,85 +361,92 @@ ifeq ($(CURL_ON_Make),1)
   else
     ifeq ($(MINGW),1)
       BASE_CFLAGS += -DCURL_EXE
-    endif
-  endif
-endif
+    endif # =MINGW
+  endif # =CURL_DLL_ON_Make
+endif # =CURL_ON_Make
 
 ifeq ($(VULKAN_API_ON_Make),1)
   BASE_CFLAGS += -DVULKAN_API_ON_Make
-endif
+endif # =VULKAN_API_ON_Make
 
-ifeq ($(DEPENDENCIES_ON),1)
+ifeq ($(DEPENDSENCIES_ON),1)
   BASE_CFLAGS += -MMD
-endif
+endif # =DEPENDSENCIES_ON
 
 #==========================================================
 
 ifeq ($(V),1)
-echo_cmd=@:
-Q=
+echo_cmd = @:
+Q =
 else
-echo_cmd=@echo
-Q=@
+echo_cmd = @echo
+Q = @
 endif
 
 #----------------------------------------------------------
 
-CPU_EXT=
+CPU_EXT =
 
-CLIENT_EXTRA_FILES=
+USER_EXTRA_FILES =
 
 #############################################################################
 # BUILD MINGW32 (Windows):
 #############################################################################
 
 ifdef MINGW
-
   ifeq ($(CROSS_COMPILE),1)
-    # If CC is already set to something generic, we probably want to use
-    # something more specific
+
+#==========================================================
+# Reset broken CC:
+#==========================================================
+
     ifneq ($(findstring $(strip $(CC)),cc gcc),)
-      CC=
+      CC =
     endif
 
-    # We need to figure out the correct gcc & windres
+#==========================================================
+# Get the right gcc & windres:
+#==========================================================
+
     ifeq ($(CPU),x86_64)
-      MINGW_PREFIXES=x86_64-w64-mingw32 amd64-mingw32msvc
-      STRIP=x86_64-w64-mingw32-strip
+      MINGW_PREFIXES = x86_64-w64-mingw32 amd64-mingw32msvc
+      STRIP = x86_64-w64-mingw32-strip
     endif
     ifeq ($(CPU),x86)
-      MINGW_PREFIXES=i686-w64-mingw32 i586-mingw32msvc i686-pc-mingw32
+      MINGW_PREFIXES = i686-w64-mingw32 i586-mingw32msvc i686-pc-mingw32
     endif
 
     ifndef CC
-      CC=$(firstword $(strip $(foreach MINGW_PREFIX, $(MINGW_PREFIXES), \
-         $(call BIN_PATH, $(MINGW_PREFIX)-gcc))))
+      CC = $(firstword $(strip $(foreach MINGW_PREFIX, $(MINGW_PREFIXES), \
+         $(call BINARY_PATH, $(MINGW_PREFIX)-gcc))))
     endif
 
-    #STRIP=$(MINGW_PREFIX)-strip -g
+    #STRIP = $(MINGW_PREFIX)-strip -g
 
     ifndef WINDRES
-      WINDRES=$(firstword $(strip $(foreach MINGW_PREFIX, $(MINGW_PREFIXES), \
-         $(call BIN_PATH, $(MINGW_PREFIX)-windres))))
+      WINDRES = $(firstword $(strip $(foreach MINGW_PREFIX, $(MINGW_PREFIXES), \
+         $(call BINARY_PATH, $(MINGW_PREFIX)-windres))))
     endif
   else
-    #If MinGW doesn't use CC (not cc) use gcc:
-    ifeq ($(call BIN_PATH, $(CC)),)
-      CC=gcc
+    # Use gcc over 'CC' (not 'cc'):
+    ifeq ($(call BINARY_PATH, $(CC)),)
+      CC = gcc
     endif
-
   endif
 
-#----------------------------------------------------------
+#==========================================================
+# Check missing vars:
+#========================================================== 
 
-  # Set generic Windres if missing:
   ifeq ($(WINDRES),)
-    WINDRES=windres
+    WINDRES = windres
   endif
 
   ifeq ($(CC),)
-    $(error Cannot find a suitable cross compiler for $(PLATFORM))
+    $(error No cross compiler for $(PLATFORM))
   endif
+
+#==========================================================
 
   BASE_CFLAGS += -Wall -Wimplicit -Wstrict-prototypes -DICON_ON_Make -DMINGW=1
   BASE_CFLAGS += -Wno-unused-result -fvisibility=hidden
@@ -431,33 +475,33 @@ ifdef MINGW
   LDFLAGS += -Wl,--gc-sections -fvisibility=hidden
   LDFLAGS += -lwsock32 -lgdi32 -lwinmm -lole32 -lws2_32 -lpsapi -lcomctl32
 
-  CLIENT_LDFLAGS=$(LDFLAGS)
+  USER_LDFLAGS=$(LDFLAGS)
 
 #----------------------------------------------------------
 
   ifeq ($(SDL_ON_Make),1)
     BASE_CFLAGS += -DHEADERS_ON_Make=1 -I$(CODE_PATH)/libsdl/windows/include/SDL2
-    #CLIENT_CFLAGS += -DHEADERS_ON_Make=1
+    #USER_CFLAGS += -DHEADERS_ON_Make=1
     ifeq ($(CPU),x86)
-      CLIENT_LDFLAGS += -L$(CODE_PATH)/libsdl/windows/mingw/lib32
-      CLIENT_LDFLAGS += -lSDL2
-      CLIENT_EXTRA_FILES += $(CODE_PATH)/libsdl/windows/mingw/lib32/SDL2.dll
+      USER_LDFLAGS += -L$(CODE_PATH)/libsdl/windows/mingw/lib32
+      USER_LDFLAGS += -lSDL2
+      USER_EXTRA_FILES += $(CODE_PATH)/libsdl/windows/mingw/lib32/SDL2.dll
     else
-      CLIENT_LDFLAGS += -L$(CODE_PATH)/libsdl/windows/mingw/lib64
-      CLIENT_LDFLAGS += -lSDL264
-      CLIENT_EXTRA_FILES += $(CODE_PATH)/libsdl/windows/mingw/lib64/SDL264.dll
-    endif
-  endif
+      USER_LDFLAGS += -L$(CODE_PATH)/libsdl/windows/mingw/lib64
+      USER_LDFLAGS += -lSDL264
+      USER_EXTRA_FILES += $(CODE_PATH)/libsdl/windows/mingw/lib64/SDL264.dll
+    endif # CPU == x86
+  endif # =SDL_ON_Make
 
   ifeq ($(CURL_ON_Make),1)
     BASE_CFLAGS += -I$(CODE_PATH)/libcurl/windows/include
     ifeq ($(CPU),x86)
-      CLIENT_LDFLAGS += -L$(CODE_PATH)/libcurl/windows/mingw/lib32
+      USER_LDFLAGS += -L$(CODE_PATH)/libcurl/windows/mingw/lib32
     else
-      CLIENT_LDFLAGS += -L$(CODE_PATH)/libcurl/windows/mingw/lib64
-    endif
-    CLIENT_LDFLAGS += -lcurl -lwldap32 -lcrypt32
-  endif
+      USER_LDFLAGS += -L$(CODE_PATH)/libcurl/windows/mingw/lib64
+    endif # CPU == x86
+    USER_LDFLAGS += -lcurl -lwldap32 -lcrypt32
+  endif # =CURL_ON_Make
 
 #----------------------------------------------------------
 
@@ -468,11 +512,11 @@ ifdef MINGW
 
 else # !MINGW:
 
-ifeq ($(SET_PLATFORM),darwin)
-
 #############################################################################
 # BUILD MAC:
 #############################################################################
+
+ifeq ($(SET_PLATFORM),darwin)
 
   BASE_CFLAGS += -Wall -Wimplicit -Wstrict-prototypes -pipe
   BASE_CFLAGS += -Wno-unused-result
@@ -489,10 +533,10 @@ ifeq ($(SET_PLATFORM),darwin)
 
   ifneq ($(SDL_CODE_HEADERS),)
     BASE_CFLAGS += $(SDL_CODE_HEADERS)
-    CLIENT_LDFLAGS = $(SDL_LIBS)
+    USER_LDFLAGS = $(SDL_LIBS)
   else
     BASE_CFLAGS += -I/Library/Frameworks/SDL2.framework/Headers
-    CLIENT_LDFLAGS = -F/Library/Frameworks -framework SDL2
+    USER_LDFLAGS = -F/Library/Frameworks -framework SDL2
   endif
 
 #----------------------------------------------------------
@@ -519,11 +563,11 @@ else
 
   ifeq ($(CPU),x86_64)
     CPU_EXT = .x64
-  else
+  else 
   ifeq ($(CPU),x86)
     OPTIMIZE += -march=i586 -mtune=i686
   endif
-  endif
+  endif # CPU == x86_64
 
   ifeq ($(CPU),arm)
     OPTIMIZE += -march=armv7-a
@@ -547,19 +591,19 @@ else
 
   ifeq ($(SDL_ON_Make),1)
     BASE_CFLAGS += $(SDL_CODE_HEADERS)
-    CLIENT_LDFLAGS = $(SDL_LIBS)
+    USER_LDFLAGS = $(SDL_LIBS)
   else
     BASE_CFLAGS += $(X11_CODE_HEADERS)
-    CLIENT_LDFLAGS = $(X11_LIBS)
+    USER_LDFLAGS = $(X11_LIBS)
   endif
 
   ifeq ($(APP_JPG_ON_Make),1)
-    CLIENT_LDFLAGS += -ljpeg
+    USER_LDFLAGS += -ljpeg
   endif
 
   ifeq ($(CURL_ON_Make),1)
     ifeq ($(CURL_DLL_ON_Make),0)
-      CLIENT_LDFLAGS += -lcurl
+      USER_LDFLAGS += -lcurl
     endif
   endif
 
@@ -568,11 +612,11 @@ else
   ifeq ($(PLATFORM),linux)
     LDFLAGS += -ldl -Wl,--hash-style=both
     ifeq ($(CPU),x86)
-      # linux32 make:
+      # Linux32 make:
       BASE_CFLAGS += -m32
       LDFLAGS += -m32
     endif
-  endif
+  endif # PLATFORM == linux
 
 #----------------------------------------------------------
 
@@ -587,29 +631,60 @@ endif # *NIX platforms
 
 endif # !MINGW
 
-#----------------------------------------------------------
-
-TARGET_CLIENT = $(CLIENT_NAME)$(CPU_EXT)$(BIN_EXT)
-
-TARGET_RENDERER1 = $(RENDERER_PREFIX_Make)_opengl_$(SHARED_LIB_NAME)
-TARGET_RENDERER2 = $(RENDERER_PREFIX_Make)_opengl2_$(SHARED_LIB_NAME)
-TARGET_RENDERER_VULKAN = $(RENDERER_PREFIX_Make)_vulkan_$(SHARED_LIB_NAME)
-
-TARGET_SERVER = $(SERVER_NAME)$(CPU_EXT)$(BIN_EXT)
-
-STRINGIFY = $(REND2_BPATH)/stringify$(BIN_EXT)
+#############################################################################
 
 TARGETS =
 
+#==========================================================
+ifeq ($(HOST_ON),1)
+#==========================================================
+
+  define DO_DED_CC
+  $(echo_cmd) "DED_CC $<"
+  $(Q)$(CC) $(UNSHARED_LIB_CFLAGS) -DDEDICATED $(CFLAGS) -o $@ -c $<
+  endef
+
 #----------------------------------------------------------
 
-ifneq ($(SERVER_ON),0)
-  TARGETS += $(B)/$(TARGET_SERVER)
-endif
+  TARGET_HOST = $(HOST_NAME)$(CPU_EXT)$(BIN_EXT)
+  TARGETS += $(B)/$(TARGET_HOST)
 
-ifneq ($(CLIENT_ON),0)
-  TARGETS += $(B)/$(TARGET_CLIENT)
-  ifneq ($(RENDERER_DLLS_ON_Make),0)
+endif # =HOST_ON
+
+#==========================================================
+ifeq ($(USER_ON),1)
+#==========================================================
+
+  define DO_CC
+  $(echo_cmd) "CC $<"
+  $(Q)$(CC) $(UNSHARED_LIB_CFLAGS) $(CFLAGS) -o $@ -c $<
+  endef
+
+  define DO_RENDERER_CC
+  $(echo_cmd) "RENDERER_CC $<"
+  $(Q)$(CC) $(RENDERER_CFLAGS) $(CFLAGS) -o $@ -c $<
+  endef
+
+  define DO_REF_STR
+  $(echo_cmd) "REF_STR $<"
+  $(Q)rm -f $@
+  $(Q)$(STRINGIFY) $< $@
+  endef
+
+#----------------------------------------------------------
+
+  TARGET_RENDERER1 = $(RENDERER_PREFIX_Make)_opengl_$(SHARED_LIB_NAME)
+  STRINGIFY = $(REND2_BPATH)/stringify$(BIN_EXT)
+  TARGET_RENDERER2 = $(RENDERER_PREFIX_Make)_opengl2_$(SHARED_LIB_NAME)
+  TARGET_RENDERER_VULKAN = $(RENDERER_PREFIX_Make)_vulkan_$(SHARED_LIB_NAME)
+  
+  TARGET_USER = $(USER_NAME)$(CPU_EXT)$(BIN_EXT)
+  TARGETS += $(B)/$(TARGET_USER)
+
+#----------------------------------------------------------
+
+  ifeq ($(RENDERER_DLLS_ON_Make),1)
+    RENDERER_CFLAGS = $(SHARED_LIB_CFLAGS)
     ifeq ($(OPENGL1_ON),1)
       TARGETS += $(B)/$(TARGET_RENDERER1)
     endif
@@ -619,43 +694,24 @@ ifneq ($(CLIENT_ON),0)
     ifeq ($(VULKAN_ON_Make),1)
       TARGETS += $(B)/$(TARGET_RENDERER_VULKAN)
     endif
-  endif
-endif
+    else
+      RENDERER_CFLAGS = $(UNSHARED_LIB_CFLAGS)
+  endif # =RENDERER_DLLS_ON_Make
+
+endif # =USER_ON
+
+#==========================================================
 
 ifeq ($(CCACHE_ON),1)
   CC = ccache $(CC)
 endif
 
-ifneq ($(RENDERER_DLLS_ON_Make),0)
-    RENDERER_CFLAGS=$(SHARED_LIB_CFLAGS)
-else
-    RENDERER_CFLAGS=$(UNSHARED_LIB_CFLAGS)
-endif
-
 #----------------------------------------------------------
-
-define DO_CC
-$(echo_cmd) "CC $<"
-$(Q)$(CC) $(UNSHARED_LIB_CFLAGS) $(CFLAGS) -o $@ -c $<
-endef
-
-define DO_RENDERER_CC
-$(echo_cmd) "RENDERER_CC $<"
-$(Q)$(CC) $(RENDERER_CFLAGS) $(CFLAGS) -o $@ -c $<
-endef
-
-define DO_REF_STR
-$(echo_cmd) "REF_STR $<"
-$(Q)rm -f $@
-$(Q)$(STRINGIFY) $< $@
-endef
 
 define DO_BOT_CC
 $(echo_cmd) "BOT_CC $<"
 $(Q)$(CC) $(UNSHARED_LIB_CFLAGS) $(CFLAGS) $(BOTCFLAGS) -DBOTLIB -o $@ -c $< 
 endef
-
-# -MF $(patsubst %.o,%.d,$@) -include INCLUDE
 
 define DO_UNSHARED_LIB_CC
 $(echo_cmd) "DO_UNSHARED_LIB_CC $<"
@@ -672,11 +728,6 @@ $(echo_cmd) "AS $<"
 $(Q)$(CC) $(CFLAGS) -DELF -x assembler-with-cpp -o $@ -c $<
 endef
 
-define DO_DED_CC
-$(echo_cmd) "DED_CC $<"
-$(Q)$(CC) $(UNSHARED_LIB_CFLAGS) -DDEDICATED $(CFLAGS) -o $@ -c $<
-endef
-
 define DO_WINDRES
 $(echo_cmd) "WINDRES $<"
 $(Q)$(WINDRES) -i $< -o $@
@@ -685,117 +736,121 @@ endef
 #----------------------------------------------------------
 
 ifndef SHARED_LIB_NAME
-  SHARED_LIB_NAME=$(CPU).$(SHARED_LIB_EXT)
+  SHARED_LIB_NAME = $(CPU).$(SHARED_LIB_EXT)
 endif
 
 #############################################################################
 # RULES:
 #############################################################################
 
-$(CLIENT_BPATH)/%.o: $(ASM_PATH)/%.s
-	$(DO_AS)
+ifeq ($(HOST_ON),1)
 
-$(CLIENT_BPATH)/%.o: $(CLIENT_PATH)/%.c
-	$(DO_CC)
-
-$(CLIENT_BPATH)/%.o: $(APP_CURL_PATH)/%.c $(CLIENT_PATH)/%.h) $(APP_CURL_PATH)/%.h
-	$(DO_CC)
-
-$(CLIENT_BPATH)/%.o: $(SERVER_PATH)/%.c
-	$(DO_CC)
-
-$(CLIENT_BPATH)/%.o: $(COMMON_PATH)/%.c
-	$(DO_CC)
-
-#DEPS = $(OBJ:.o=.d)
-#-include $(DEPS)  
-
-# broken:
-$(BOTLIB_BPATH)/%.o: $(BOTLIB_PATH)/%.c $(BOTLIB_PATH)/%.h $(COMMON_PATH)/%.h 
-  %.o: %.c
-  #%.o: %.c ${BOTLIB_HEADER}
+$(HOST_BPATH)/%.o: $(COMMON_PATH)/%.c
+	$(DO_DED_CC)
+$(HOST_BPATH)/%.o: $(BOTLIB_PATH)/%.c
 	$(DO_BOT_CC)
+$(HOST_BPATH)/%.o: $(HOST_PATH)/%.c
+	$(DO_DED_CC)
+$(HOST_BPATH)/%.o: $(MATH_PATH)/%.c
+	$(DO_DED_CC)
+$(HOST_BPATH)/%.o: $(UNIX_PATH)/%.c
+	$(DO_DED_CC)
+$(HOST_BPATH)/%.o: $(VM_X86_PATH)/%.c
+	$(DO_DED_CC)
+$(HOST_BPATH)/%.o: $(VM_X86_64_PATH)/%.c
+	$(DO_DED_CC)
+$(HOST_BPATH)/%.o: $(VM_ARM_PATH)/%.c
+	$(DO_DED_CC)
+$(HOST_BPATH)/%.o: $(VM_AARCH64_PATH)/%.c
+	$(DO_DED_CC)
+$(HOST_BPATH)/%.o: $(WIN32_PATH)/%.c
+	$(DO_DED_CC)
+$(HOST_BPATH)/%.o: $(WIN32_PATH)/%.rc
+	$(DO_WINDRES)
 
-$(B)/libjpeg/%.o: $(JPG_PATH)/%.c
-	$(DO_CC)
+endif # =HOST_ON
 
-$(CLIENT_BPATH)/%.o: $(SDL_PATH)/%.c
-	$(DO_CC)
+#==========================================================
 
-$(CLIENT_BPATH)/%.o: $(VM_X86_PATH)/%.c
-	$(DO_CC)
+ifeq ($(USER_ON),1)
 
-$(SERVER_BPATH)/%.o: $(VM_X86_PATH)/%.c
+$(USER_BPATH)/%.o: $(ASM_PATH)/%.s
+	$(DO_AS)
+$(USER_BPATH)/%.o: $(APP_CURL_PATH)/%.c
 	$(DO_CC)
+$(BOTLIB_BPATH)/%.o: $(BOTLIB_PATH)/%.c
+	$(DO_BOT_CC)
+$(USER_BPATH)/%.o: $(COMMON_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(HOST_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(JPG_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(MATH_GFX_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(MATH_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(SDL_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(UNIX_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(USER_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(VM_X86_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(VM_X86_64_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(VM_ARM_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(VM_AARCH64_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(WIN32_PATH)/%.c
+	$(DO_CC)
+$(USER_BPATH)/%.o: $(WIN32_PATH)/%.rc
+	$(DO_WINDRES)
 
-$(CLIENT_BPATH)/%.o: $(RENDERER_PATH)/%.c
-	$(DO_CC)
-
-$(SERVER_BPATH)/%.o: $(RENDERER_PATH)/%.c
-	$(DO_CC)
+#==========================================================
 
 $(REND1_BPATH)/%.o: $(RENDERER1_PATH)/%.c
 	$(DO_RENDERER_CC)
-
 $(REND1_BPATH)/%.o: $(RENDERER_COMMON_PATH)/%.c
 	$(DO_RENDERER_CC)
-
-$(REND1_BPATH)/%.o: $(COMMON_PATH)/%.c
+$(REND1_BPATH)/%.o: $(RENDERER_FONT_PATH)/%.c
+	$(DO_RENDERER_CC)
+$(REND1_BPATH)/%.o: $(MATH_GFX_PATH)/%.c
+	$(DO_RENDERER_CC)
+$(REND1_BPATH)/%.o: $(MATH_PATH)/%.c
 	$(DO_RENDERER_CC)
 
-$(REND2_BPATH)/glsl/%.c: $(RENDERER2_PATH)/glsl/%.glsl $(STRINGIFY)
+#----------------------------------------------------------
+
+$(REND2_FX_BPATH)/%.c: $(RENDERER2_FX_PATH)/%.glsl $(STRINGIFY)
 	$(DO_REF_STR)
-
-$(REND2_BPATH)/glsl/%.o: $(RENDERER2_PATH)/glsl/%.c
+$(REND2_FX_BPATH)/%.o: $(RENDERER2_FX_PATH)/%.c
 	$(DO_RENDERER_CC)
-
 $(REND2_BPATH)/%.o: $(RENDERER2_PATH)/%.c
 	$(DO_RENDERER_CC)
-
 $(REND2_BPATH)/%.o: $(RENDERER_COMMON_PATH)/%.c
 	$(DO_RENDERER_CC)
-
-$(REND2_BPATH)/%.o: $(COMMON_PATH)/%.c
+$(REND2_BPATH)/%.o: $(RENDERER_FONT_PATH)/%.c
 	$(DO_RENDERER_CC)
+$(REND2_BPATH)/%.o: $(MATH_GFX_PATH)/%.c
+	$(DO_RENDERER_CC)
+$(REND2_BPATH)/%.o: $(MATH_PATH)/%.c
+	$(DO_RENDERER_CC)
+
+#----------------------------------------------------------
 
 $(RENDV_BPATH)/%.o: $(RENDERERV_PATH)/%.c
 	$(DO_RENDERER_CC)
-
 $(RENDV_BPATH)/%.o: $(RENDERER_COMMON_PATH)/%.c
 	$(DO_RENDERER_CC)
-
-$(RENDV_BPATH)/%.o: $(COMMON_PATH)/%.c
+$(RENDV_BPATH)/%.o: $(MATH_GFX_PATH)/%.c
 	$(DO_RENDERER_CC)
+$(RENDV_BPATH)/%.o: $(MATH_PATH)/%.c
+	$(DO_RENDERER_CC)  
 
-$(CLIENT_BPATH)/%.o: $(UNIX_PATH)/%.c
-	$(DO_CC)
-
-$(CLIENT_BPATH)/%.o: $(WIN32_PATH)/%.c
-	$(DO_CC)
-
-$(CLIENT_BPATH)/%.o: $(WIN32_PATH)/%.rc
-	$(DO_WINDRES)
-
-$(SERVER_BPATH)/%.o: $(ASM_PATH)/%.s
-	$(DO_AS)
-
-$(SERVER_BPATH)/%.o: $(SERVER_PATH)/%.c
-	$(DO_DED_CC)
-
-$(SERVER_BPATH)/%.o: $(COMMON_PATH)/%.c
-	$(DO_DED_CC)
-
-$(SERVER_BPATH)/%.o: $(BOTLIB_PATH)/%.c
-	$(DO_BOT_CC)
-
-$(SERVER_BPATH)/%.o: $(UNIX_PATH)/%.c
-	$(DO_DED_CC)
-
-$(SERVER_BPATH)/%.o: $(WIN32_PATH)/%.c
-	$(DO_DED_CC)
-
-$(SERVER_BPATH)/%.o: $(WIN32_PATH)/%.rc
-	$(DO_WINDRES)
+endif # =USER_ON
 
 #############################################################################
 # TARGETS:
@@ -819,47 +874,48 @@ $2: $1
 	@cp $1 $2
 endef
 
-# Create rules for copying files into the base build path (for bundling):
+# Build path rules (for bundling):
 define GENERATE_COPY_TARGETS
-$(foreach FILE,$1, \
-  $(eval $(call ADD_COPY_TARGET, \
-    $(FILE), \
-    $(addprefix $(B)/,$(notdir $(FILE))))))
+  $(foreach FILE,$1, \
+    $(eval $(call ADD_COPY_TARGET, \
+      $(FILE), \
+      $(addprefix $(B)/, $(notdir $(FILE))))))
 endef
 
 #----------------------------------------------------------
 
-ifneq ($(CLIENT_ON),0)
-  $(call GENERATE_COPY_TARGETS,$(CLIENT_EXTRA_FILES))
+ifeq ($(USER_ON),1)
+  $(call GENERATE_COPY_TARGETS,$(USER_EXTRA_FILES))
 endif
 
-#----------------------------------------------------------
+#==========================================================
+# Create Tools & Build folders:
+#==========================================================
 
-# Create Build folders & tools, then build:
 targets: doFolders tools
 	@echo ""
-	@echo "Building $(CLIENT_NAME) in $(B):"
+	@echo "Building $(USER_NAME) in $(B):"
 	@echo ""
-	@echo "  VERSION: $(VERSION)"
-	@echo "  PLATFORM: $(PLATFORM)"
-	@echo "  CPU: $(CPU)"
-	@echo "  SET_PLATFORM: $(SET_PLATFORM)"
-	@echo "  SET_CPU: $(SET_CPU)"
+	@echo " VERSION: $(VERSION)"
+	@echo " PLATFORM: $(PLATFORM)"
+	@echo " CPU: $(CPU)"
+	@echo " SET_PLATFORM: $(SET_PLATFORM)"
+	@echo " SET_CPU: $(SET_CPU)"
 ifdef MINGW
-	@echo "  WINDRES: $(WINDRES)"
+	@echo " WINDRES: $(WINDRES)"
 endif
-	@echo "  CC: $(CC)"
+	@echo " CC: $(CC)"
 	@echo ""
-	@echo "  CFLAGS:"
+	@echo " CFLAGS:"
 	@for i in $(CFLAGS); \
 	do \
-		echo "    $$i"; \
+		echo " $$i"; \
 	done
 	@echo ""
-	@echo "  Output:"
+	@echo " Output:"
 	@for i in $(TARGETS); \
 	do \
-		echo "    $$i"; \
+		echo " $$i"; \
 	done
 	@echo ""
 ifneq ($(TARGETS),)
@@ -867,345 +923,249 @@ ifneq ($(TARGETS),)
 endif
 
 #----------------------------------------------------------
-
 # Create folders from paths:
+#----------------------------------------------------------
+
 doFolders:
 	@if [ ! -d $(BUILD_PATH) ];then $(MKDIR) $(BUILD_PATH);fi
 	@if [ ! -d $(B) ];then $(MKDIR) $(B);fi
-	@if [ ! -d $(CLIENT_BPATH) ];then $(MKDIR) $(CLIENT_BPATH);fi
-	@if [ ! -d $(SERVER_BPATH) ];then $(MKDIR) $(SERVER_BPATH);fi
+	@if [ ! -d $(OBJECT_BPATH) ];then $(MKDIR) $(OBJECT_BPATH);fi
+	@if [ ! -d $(USER_BPATH) ];then $(MKDIR) $(USER_BPATH);fi
+	@if [ ! -d $(HOST_BPATH) ];then $(MKDIR) $(HOST_BPATH);fi
 	@if [ ! -d $(REND1_BPATH) ];then $(MKDIR) $(REND1_BPATH);fi
 	@if [ ! -d $(REND2_BPATH) ];then $(MKDIR) $(REND2_BPATH);fi
-	@if [ ! -d $(REND2_BPATH)/glsl ];then $(MKDIR) $(REND2_BPATH)/glsl;fi
+	@if [ ! -d $(REND2_FX_BPATH) ];then $(MKDIR) $(REND2_FX_BPATH);fi
 	@if [ ! -d $(RENDV_BPATH) ];then $(MKDIR) $(RENDV_BPATH);fi
 	@if [ ! -d $(BOTLIB_BPATH) ];then $(MKDIR) $(BOTLIB_BPATH);fi
 	
-  #@if [ ! -d $(B)/libjpeg ];then $(MKDIR) $(B)/libjpeg;fi
+#@if [ ! -d $(JPG_BPATH) ];then $(MKDIR) $(JPG_BPATH);fi
 
 #############################################################################
-# CLIENT/SERVER:
+# [DEDICATED] HOST & USER OBJECTS:
 #############################################################################
 
-CLIENT_CODE = $(wildcard $(CLIENT_PATH)/*.c)
-CLIENT_OBJS = $(CLIENT_CODE:%.c=%.o)
-#CLIENT_OBJS = $($(CLIENT_BPATH)/, $(patsubst %.c, %.o, $(CLIENT_CODE)))
+HOST_CODE := $(wildcard $(HOST_PATH)/*.c)
+OBJ = $(patsubst $(HOST_PATH)/%.c, $(USER_BPATH)/%.o, $(HOST_CODE))
+HOST_OBJ = $(patsubst $(HOST_PATH)/%.c, $(HOST_BPATH)/%.o, $(HOST_CODE))
 
-OBJ = $(CLIENT_OBJS)
+COMMON_CODE := $(wildcard $(COMMON_PATH)/*.c)
+OBJ += $(patsubst $(COMMON_PATH)/%.c, $(USER_BPATH)/%.o, $(COMMON_CODE))
+HOST_OBJ += $(patsubst $(COMMON_PATH)/%.c, $(HOST_BPATH)/%.o, $(COMMON_CODE))
 
-COMMON_OBJS += $(wildcard $(COMMON_PATH)/*.c)
-OBJ += $(COMMON_OBJS)
+MATH_CODE := $(wildcard $(MATH_PATH)/*.c)
+OBJ += $(patsubst $(MATH_PATH)/%.c, $(USER_BPATH)/%.o, $(MATH_CODE))
+HOST_OBJ += $(patsubst $(MATH_PATH)/%.c, $(HOST_BPATH)/%.o, $(MATH_CODE))
 
-COMMON_RENDERER_OBJS = $(wildcard $(RENDERER_PATH)/*.c)
-OBJ += $(COMMON_RENDERER_OBJS)
-
-# Server:
-SERVER_OBJS = $(wildcard $(SERVER_PATH)/*.c)
-OBJ += $(SERVER_OBJS)
-
-# Botlib:
-#BOTLIB_HEADER = $(wildcard $(BOTLIB_PATH)/*.h) $(wildcard $(COMMON_PATH)/*.h) 
-BOTLIB_CODE = $(wildcard $(BOTLIB_PATH)/*.c)
-BOTLIB_OBJS = $(BOTLIB_CODE:%.c=%.o)
-#BOTLIB_OBJS = $($(BOTLIB_BPATH)/, $(patsubst %.c, %.o, $(BOTLIB_CODE)))
-#BOTLIB_OBJS = $(patsubst %.c, %.o, $(BOTLIB_CODE))
-#OBJ += $(BOTLIB_CODE)
-
-OBJ += $(BOTLIB_OBJS)
-
-JPG_OBJS = $(wildcard $(JPG_PATH)/*.c)
-
-RENDERER1_OBJS = $(wildcard $(RENDERER1_PATH)/*.c)
+BOTLIB_CODE := $(wildcard $(BOTLIB_PATH)/*.c)
+OBJ += $(patsubst $(BOTLIB_PATH)/%.c, $(BOTLIB_BPATH)/%.o, $(BOTLIB_CODE))
+HOST_OBJ += $(patsubst $(BOTLIB_PATH)/%.c, $(HOST_BPATH)/%.o, $(BOTLIB_CODE))
 
 #----------------------------------------------------------
 
-ifneq ($(RENDERER_DLLS_ON_Make), 0)
-  REND1_CODE = $(wildcard $(RENDERER_PATH)/*.c)
-  RENDERER1_OBJS += $(REND1_CODE)
-endif
-
-#----------------------------------------------------------
-
-RENDERER2_OBJS = $(wildcard $(RENDERER2_PATH)/*.c)
-
-ifneq ($(RENDERER_DLLS_ON_Make), 0)
-  REND2_CODE = $(wildcard $(RENDERER_PATH)/*.c)
-  RENDERER2_OBJS += $(REND2_CODE)
-endif
-
-RENDERER2_FX_OBJS = $(REND2_BPATH)/glsl/*.o
-#RENDERER2_FX_CODE = $(wildcard $(RENDERER2_PATH)/glsl/*.glsl)
-#RENDERER2_FX_OBJS = $(RENDERER2_FX_CODE:%.glsl=%.o)
-
-#-----------------------------------------------------------
-
-RENDERER_VULKAN_OBJS = $(wildcard $(RENDERERV_PATH)/*.c)
-
-ifneq ($(RENDERER_DLLS_ON_Make), 0)
-  RENDV_CODE = $(wildcard $(RENDERER_PATH)/*.c)
-  RENDERER_VULKAN_OBJS += $(RENDV_CODE)
-endif
-
-#----------------------------------------------------------
-
-ifneq ($(APP_JPG_ON_Make),1)
-  OBJ += $(JPG_OBJS)
-endif
-
-ifneq ($(RENDERER_DLLS_ON_Make),1)
-  ifeq ($(VULKAN_ON_Make),1)
-    OBJ += $(RENDERER_VULKAN_OBJS)
-  else
-    ifeq ($(OPENGL2_ON),1)
-      OBJ += $(RENDERER2_OBJS)
-      OBJ += $(RENDERER2_FX_OBJS)
-    else
-      OBJ += $(RENDERER1_OBJS)
-    endif
+ifeq ($(VM_ON),1)
+  ifeq ($(CPU),x86)
+    VM_X86_CODE := $(wildcard $(VM_X86_PATH)/*.c)
+    OBJ += $(patsubst $(VM_X86_PATH)/%.c, $(USER_BPATH)/%.o, $(VM_X86_CODE))
+    HOST_OBJ += $(patsubst $(VM_X86_PATH)/%.c, $(HOST_BPATH)/%.o, $(VM_X86_CODE))
   endif
-endif
+  ifeq ($(CPU),x86_64)
+    VM_X86_64_CODE := $(wildcard $(VM_X86_64_PATH)/*.c)
+    OBJ += $(patsubst $(VM_X86_64_PATH)/%.c, $(USER_BPATH)/%.o, $(VM_X86_64_CODE))
+    HOST_OBJ += $(patsubst $(VM_X86_64_PATH)/%.c, $(HOST_BPATH)/%.o, $(VM_X86_64_CODE))
+  endif
+  ifeq ($(CPU),arm)
+    VM_ARM_CODE := $(wildcard $(VM_ARM_PATH)/*.c)
+    OBJ += $(patsubst $(VM_ARM_PATH)/%.c, $(USER_BPATH)/%.o, $(VM_ARM_CODE))
+    HOST_OBJ += $(patsubst $(VM_ARM_PATH)/%.c, $(HOST_BPATH)/%.o, $(VM_ARM_CODE))
+  endif
+  ifeq ($(CPU),aarch64)
+    VM_AARCH64_CODE := $(wildcard $(VM_AARCH64_PATH)/*.c)
+    OBJ += $(patsubst $(VM_AARCH64_PATH)/%.c, $(USER_BPATH)/%.o, $(VM_AARCH64_CODE))
+    HOST_OBJ += $(patsubst $(VM_AARCH64_PATH)/%.c, $(HOST_BPATH)/%.o, $(VM_AARCH64_CODE))
+  endif
+endif # =VM_ON
+
+#==========================================================
+ifdef MINGW # (Windows):
+#==========================================================
+
+  WIN32_MAIN_CODE := $(wildcard $(WIN32_PATH)/*.c)
+  OBJ += $(patsubst $(WIN32_PATH)/%.c, $(USER_BPATH)/%.o, $(WIN32_MAIN_CODE))
+  HOST_OBJ += $(patsubst $(WIN32_PATH)/%.c, $(HOST_BPATH)/%.o, $(WIN32_MAIN_CODE))
+
+  # END HOST_OBJ:
+
+#----------------------------------------------------------
+
+  WIN32_SDL_ON_CODE := $(wildcard $(WIN32_SDL_ON_PATH)/*.c)
+  OBJ += $(patsubst $(WIN32_SDL_ON_PATH)/%.c, $(USER_BPATH)/%.o, $(WIN32_SDL_ON_CODE))
+
+#----------------------------------------------------------
+
+  ifeq ($(SDL_ON_Make),0)
+    WIN32_SDL_OFF_CODE := $(wildcard $(WIN32_SDL_OFF_PATH)/*.c)
+    OBJ += $(patsubst $(WIN32_SDL_OFF_PATH)/%.c, $(USER_BPATH)/%.o, $(WIN32_SDL_OFF_CODE))
+   ifeq ($(VULKAN_API_ON_Make),1)
+      WIN32_VK_ON_CODE := $(wildcard $(WIN32_VK_ON_PATH)/*.c)
+      OBJ += $(patsubst $(WIN32_VK_ON_PATH)/%.c, $(USER_BPATH)/%.o, $(WIN32_VK_ON_CODE))
+   endif # =VULKAN_API_ON_Make
+  endif # !SDL_ON_Make
+
+#==========================================================
+else # !MINGW (UNIX):
+#==========================================================
+  
+  UNIX_MAIN_CODE := $(wildcard $(UNIX_PATH)/*.c)
+  OBJ += $(patsubst $(UNIX_PATH)/%.c, $(USER_BPATH)/%.o, $(UNIX_MAIN_CODE))
+  HOST_OBJ += $(patsubst $(UNIX_PATH)/%.c, $(HOST_BPATH)/%.o, $(UNIX_MAIN_CODE))
+
+  # END HOST_OBJ:
+
+#----------------------------------------------------------
+
+  ifeq ($(SDL_ON_Make),1)
+    SDL_ON_CODE := $(wildcard $(SDL_PATH)/*.c)
+    OBJ += $(patsubst $(SDL_PATH)/%.c, $(USER_BPATH)/%.o, $(SDL_ON_CODE))
+  else # !SDL_ON_Make:
+    UNIX_SDL_OFF_CODE := $(wildcard $(UNIX_SDL_OFF_PATH)/*.c)
+    OBJ += $(patsubst $(UNIX_SDL_OFF_PATH)/%.c, $(USER_BPATH)/%.o, $(UNIX_SDL_OFF_CODE))
+  ifeq ($(VULKAN_API_ON_Make),1)
+    UNIX_VULKAN_ON_CODE := $(wildcard $(UNIX_VK_ON_PATH)/*.c)
+    OBJ += $(patsubst $(UNIX_VK_ON_PATH)/%.c, $(USER_BPATH)/%.o, $(UNIX_VULKAN_ON_CODE))
+  endif
+
+endif # !SDL_ON_Make
+endif # !MINGW
+
+#----------------------------------------------------------
+
+ifeq ($(USER_ON),1)
+
+USER_CODE := $(wildcard $(USER_PATH)/*.c)
+OBJ += $(patsubst $(USER_PATH)/%.c, $(USER_BPATH)/%.o, $(USER_CODE))
+
+MATH_GFX_CODE := $(wildcard $(MATH_GFX_PATH)/*.c)
+OBJ += $(patsubst $(MATH_GFX_PATH)/%.c, $(USER_BPATH)/%.o, $(MATH_GFX_CODE))
 
 #----------------------------------------------------------
 
 ifeq ($(CPU),x86)
-ifndef MINGW
-  ASM_X86_CODE = $(wildcard  $(ASM_X86_BPATH)/*.s)
-  OBJ += $(ASM_X86_CODE)
-  #OBJ += \
-    $(CLIENT_BPATH)/x86/snd_mix_mmx.o \
-    $(CLIENT_BPATH)/x86/snd_mix_sse.o
-endif
-endif
-
-#----------------------------------------------------------
-
-ifeq ($(VM_ON),true)
-  VM_CODE =
-  ifeq ($(CPU),x86)
-    VM_X86_CODE = $(wildcard $(VM_X86_PATH)/*.c)
-    OBJ += $(VM_X86_CODE)
+  ifndef MINGW
+    ASM_X86_CODE := $(wildcard $(ASM_X86_PATH)/*.s)
+    OBJ += $(patsubst $(ASM_X86_PATH)/%.c, $(USER_BPATH)/%.o, $(ASM_X86_CODE))
   endif
-  ifeq ($(CPU),x86_64)
-    VM_X86_64_CODE = $(wildcard $(VM_X86_64_PATH)/*.c)
-    OBJ += $(VM_X86_64_CODE)
-  endif
-  ifeq ($(CPU),arm)
-    VM_ARM_CODE = $(wildcard $(VM_ARM_PATH)/*.c)
-    OBJ += VM_ARM_CODE
-  endif
-  ifeq ($(CPU),aarch64)
-    VM_AARCH64_CODE = $(wildcard $(VM_AARCH64_PATH)/*.c)
-    OBJ += VM_AARCH64_CODE
-  endif
-
 endif
 
 #----------------------------------------------------------
 
 ifeq ($(CURL_ON_Make),1)
-  APP_CURL_CODE = $(wildcard $(APP_CURL_PATH)/*.c)
-  APP_CURL_OBJS = $(APP_CURL_CODE:%.c=%.o)
-  OBJ += $(APP_CURL_OBJS)
+  APP_CURL_CODE := $(wildcard $(APP_CURL_PATH)/*.c)
+  OBJ += $(patsubst $(APP_CURL_PATH)/%.c, $(USER_BPATH)/%.o, $(APP_CURL_CODE))
+endif
+
+#----------------------------------------------------------
+
+ifeq ($(APP_JPG_ON_Make),0)
+  JPG_CODE := $(wildcard $(JPG_PATH)/*.c)
+  OBJ += $(patsubst $(JPG_PATH)/%.c, $(USER_BPATH)/%.o, $(JPG_CODE))
+endif
+
+#----------------------------------------------------------
+
+RENDERER_COMMON_CODE := $(wildcard $(RENDERER_COMMON_PATH)/*.c)
+RENDERER_FONT_CODE := $(wildcard $(RENDERER_FONT_PATH)/*.c)
+
+RENDERER_VULKAN_CODE := $(wildcard $(RENDERERV_PATH)/*.c)
+REND_V_OBJ = $(patsubst $(RENDERER_COMMON_PATH)/%.c, $(RENDV_BPATH)/%.o, $(RENDERER_COMMON_CODE))
+REND_V_OBJ += $(patsubst $(RENDERERV_PATH)/%.c, $(RENDV_BPATH)/%.o, $(RENDERER_VULKAN_CODE))
+
+RENDERER2_CODE := $(wildcard $(RENDERER2_PATH)/*.c)
+REND_2_OBJ = $(patsubst $(RENDERER_COMMON_PATH)/%.c, $(REND2_BPATH)/%.o, $(RENDERER_COMMON_CODE))
+REND_2_OBJ += $(patsubst $(RENDERER_FONT_PATH)/%.c, $(REND2_BPATH)/%.o, $(RENDERER_FONT_CODE))
+REND_2_OBJ += $(patsubst $(RENDERER2_PATH)/%.c, $(REND2_BPATH)/%.o, $(RENDERER2_CODE))
+
+RENDERER2_FX_CODE := $(wildcard $(RENDERER2_FX_PATH)/*.glsl)
+REND_2_FX_OBJ = $(patsubst $(RENDERER2_FX_PATH)/%.glsl, $(REND2_FX_BPATH)/%.o, $(RENDERER2_FX_CODE))
+
+RENDERER1_CODE := $(wildcard $(RENDERER1_PATH)/*.c)
+REND_1_OBJ = $(patsubst $(RENDERER_COMMON_PATH)/%.c, $(REND1_BPATH)/%.o, $(RENDERER_COMMON_CODE))
+REND_1_OBJ += $(patsubst $(RENDERER_FONT_PATH)/%.c, $(REND1_BPATH)/%.o, $(RENDERER_FONT_CODE))
+REND_1_OBJ += $(patsubst $(RENDERER1_PATH)/%.c, $(REND1_BPATH)/%.o, $(RENDERER1_CODE))
+
+#----------------------------------------------------------
+
+ifeq ($(RENDERER_DLLS_ON_Make),1)
+
+  ifeq ($(VULKAN_ON_Make),1)
+    REND_V_OBJ += $(patsubst $(MATH_PATH)/%.c, $(RENDV_BPATH)/%.o, $(MATH_CODE))
+    REND_V_OBJ += $(patsubst $(MATH_GFX_PATH)/%.c, $(RENDV_BPATH)/%.o, $(MATH_GFX_CODE))
+  endif
+
+  ifeq ($(OPENGL2_ON),1)
+    REND_2_OBJ += $(patsubst $(MATH_PATH)/%.c, $(REND2_BPATH)/%.o, $(MATH_CODE))
+    REND_2_OBJ += $(patsubst $(MATH_GFX_PATH)/%.c, $(REND2_BPATH)/%.o, $(MATH_GFX_CODE))
+  endif
+
+  ifeq ($(OPENGL1_ON),1)
+    REND_1_OBJ += $(patsubst $(MATH_PATH)/%.c, $(REND1_BPATH)/%.o, $(MATH_CODE))
+    REND_1_OBJ += $(patsubst $(MATH_GFX_PATH)/%.c, $(REND1_BPATH)/%.o, $(MATH_GFX_CODE))
+  endif
+
+endif # =RENDERER_DLLS_ON_Make
+
+#----------------------------------------------------------
+
+ifeq ($(RENDERER_DLLS_ON_Make),0)
+  ifeq ($(VULKAN_ON_Make),1)
+    OBJ += $(REND_V_OBJ)
+  else
+    ifeq ($(OPENGL2_ON),1)
+      OBJ += $(REND_2_OBJ)
+      OBJ += $(REND_2_FX_OBJ)
+    else
+      OBJ += $(REND_1_OBJ)
+    endif
+  endif
 endif
 
 #==========================================================
-ifdef MINGW
-#==========================================================
-  WIN32_MAIN_CODE = $(wildcard $(WIN32_PATH)/*.c)
-  OBJ += $(WIN32_MAIN_CODE)
-  
-  WIN32_SDL_ON_CODE = $(wildcard $(WIN32_SDL_ON_PATH)/*.c)
-  OBJ += $(WIN32_SDL_ON_CODE)
-
-ifeq ($(SDL_ON_Make),1)
-
-else # !SDL_ON_Make
-    WIN32_SDL_OFF_CODE = $(wildcard $(WIN32_SDL_OFF_PATH)/*.c)
-    OBJ += $(WIN32_SDL_OFF_CODE)
-ifeq ($(VULKAN_API_ON_Make),1)
-    WIN32_VK_ON_CODE = $(wildcard $(WIN32_VK_ON_PATH)/*.c)
-    OBJ += $(WIN32_VK_ON_CODE)
-endif
-endif # !SDL_ON_Make
-
-#==========================================================
-else # !MINGW:
-#==========================================================
-  
-  UNIX_MAIN_CODE = $(wildcard $(UNIX_PATH)/*.c)
-  OBJ += $(UNIX_MAIN_CODE)
-
-ifeq ($(SDL_ON_Make),1)
-    SDL_ON_CODE = $(wildcard $(SDL_PATH)/*.c)
-    SDL_ON_OBJS = $(SDL_ON_CODE:%.c=%.o)
-    OBJ += $(SDL_ON_OBJS)
-else # !SDL_ON_Make:
-    UNIX_SDL_OFF_CODE = $(wildcard $(UNIX_SDL_OFF_PATH)/*.c)
-    OBJ += $(UNIX_SDL_OFF_CODE)
-ifeq ($(VULKAN_API_ON_Make),1)
-    UNIX_VULKAN_ON_CODE = $(wildcard $(UNIX_VK_ON_PATH)/*.c)
-    OBJ += $(UNIX_VULKAN_ON_CODE)
-endif
-
-endif # !SDL_ON_Make
-
-endif # !MINGW
-
-#==========================================================
-# Client binary:
+# User binary:
 #==========================================================
 
-$(B)/$(TARGET_CLIENT): $(OBJ)
+$(B)/$(TARGET_USER): $(OBJ)
 	$(echo_cmd) "LD $@"
-	$(Q)$(CC) -o $@ $(OBJ) $(CLIENT_LDFLAGS) \
+	$(Q)$(CC) -o $@ $(OBJ) $(USER_LDFLAGS) \
 		$(LDFLAGS)
 
 #===========================================================
 # Modular renderers:
 #===========================================================
 
-$(B)/$(TARGET_RENDERER1): $(RENDERER1_OBJS)
+$(B)/$(TARGET_RENDERER_VULKAN): $(REND_V_OBJ)
 	$(echo_cmd) "LD $@"
-	$(Q)$(CC) -o $@ $(RENDERER1_OBJS) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
+	$(Q)$(CC) -o $@ $(REND_V_OBJ) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
 
 $(STRINGIFY): $(wildcard $(RENDERER2_STRING_PATH)/*.c)
 	$(echo_cmd) "LD $@"
 	$(Q)$(CC) -o $@ $(wildcard $(RENDERER2_STRING_PATH)/*.c) $(LDFLAGS)
 
-$(B)/$(TARGET_RENDERER2): $(RENDERER2_OBJS) $(RENDERER2_FX_OBJS)
+$(B)/$(TARGET_RENDERER2): $(REND_2_OBJ) $(REND_2_FX_OBJ)
 	$(echo_cmd) "LD $@"
-	$(Q)$(CC) -o $@ $(RENDERER2_OBJS) $(RENDERER2_FX_OBJS) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
+	$(Q)$(CC) -o $@ $(REND_2_OBJ) $(REND_2_FX_OBJ) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
 
-$(B)/$(TARGET_RENDERER_VULKAN): $(RENDERER_VULKAN_OBJS)
+$(B)/$(TARGET_RENDERER1): $(REND_1_OBJ)
 	$(echo_cmd) "LD $@"
-	$(Q)$(CC) -o $@ $(RENDERER_VULKAN_OBJS) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
+	$(Q)$(CC) -o $@ $(REND_1_OBJ) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
 
-#############################################################################
-# DEDICATED SERVER:
-#############################################################################
+endif # =USER_ON
 
-# Server:
-#DOBJ = $(SERVER_OBJS)
+#==========================================================
+# Host binary (dedicated):
+#==========================================================
 
-DOBJ = \
-  $(SERVER_BPATH)/sv_bot.o \
-  $(SERVER_BPATH)/sv_client.o \
-  $(SERVER_BPATH)/sv_ccmds.o \
-  $(SERVER_BPATH)/sv_filter.o \
-  $(SERVER_BPATH)/sv_game.o \
-  $(SERVER_BPATH)/sv_init.o \
-  $(SERVER_BPATH)/sv_main.o \
-  $(SERVER_BPATH)/sv_net_chan.o \
-  $(SERVER_BPATH)/sv_snapshot.o \
-  $(SERVER_BPATH)/sv_world.o 
-
-# Common:
-#DOBJ += $(COMMON_OBJS)
-
-DOBJ += \
-  $(SERVER_BPATH)/cm_load.o \
-  $(SERVER_BPATH)/cm_patch.o \
-  $(SERVER_BPATH)/cm_polylib.o \
-  $(SERVER_BPATH)/cm_test.o \
-  $(SERVER_BPATH)/cm_trace.o \
-  $(SERVER_BPATH)/cmd.o \
-  $(SERVER_BPATH)/common.o \
-  $(SERVER_BPATH)/cvar.o \
-  $(SERVER_BPATH)/files.o \
-  $(SERVER_BPATH)/history.o \
-  $(SERVER_BPATH)/keys.o \
-  $(SERVER_BPATH)/md4.o \
-  $(SERVER_BPATH)/md5.o \
-  $(SERVER_BPATH)/msg.o \
-  $(SERVER_BPATH)/net_chan.o \
-  $(SERVER_BPATH)/net_ip.o \
-  $(SERVER_BPATH)/huffman.o \
-  $(SERVER_BPATH)/huffman_static.o 
-
-# VM:
-#DOBJ += \
-  $(SERVER_BPATH)/unzip.o \
-  $(SERVER_BPATH)/vm.o \
-  $(SERVER_BPATH)/vm_interpreted.o
-
-# Common/renderer:
-#DOBJ += $(COMMON_RENDERER_OBJS)
-
-DOBJ += \
-  $(SERVER_BPATH)/q_math.o \
-  $(SERVER_BPATH)/q_shared.o
-
-
-# Botlib:
-#DOBJ += $(BOTLIB_OBJS)
-
-DOBJ += \
-  $(SERVER_BPATH)/be_aas_bspq3.o \
-  $(SERVER_BPATH)/be_aas_cluster.o \
-  $(SERVER_BPATH)/be_aas_debug.o \
-  $(SERVER_BPATH)/be_aas_entity.o \
-  $(SERVER_BPATH)/be_aas_file.o \
-  $(SERVER_BPATH)/be_aas_main.o \
-  $(SERVER_BPATH)/be_aas_move.o \
-  $(SERVER_BPATH)/be_aas_optimize.o \
-  $(SERVER_BPATH)/be_aas_reach.o \
-  $(SERVER_BPATH)/be_aas_route.o \
-  $(SERVER_BPATH)/be_aas_routealt.o \
-  $(SERVER_BPATH)/be_aas_sample.o \
-  $(SERVER_BPATH)/be_ai_char.o \
-  $(SERVER_BPATH)/be_ai_chat.o \
-  $(SERVER_BPATH)/be_ai_gen.o \
-  $(SERVER_BPATH)/be_ai_goal.o \
-  $(SERVER_BPATH)/be_ai_move.o \
-  $(SERVER_BPATH)/be_ai_weap.o \
-  $(SERVER_BPATH)/be_ai_weight.o \
-  $(SERVER_BPATH)/be_ea.o \
-  $(SERVER_BPATH)/be_interface.o \
-  $(SERVER_BPATH)/l_crc.o \
-  $(SERVER_BPATH)/l_libvar.o \
-  $(SERVER_BPATH)/l_log.o \
-  $(SERVER_BPATH)/l_memory.o \
-  $(SERVER_BPATH)/l_precomp.o \
-  $(SERVER_BPATH)/l_script.o \
-  $(SERVER_BPATH)/l_struct.o
-
-
-ifdef MINGW
-  #DOBJ += $(WIN32_MAIN_CODE)
-  DOBJ += \
-  $(SERVER_BPATH)/win_main.o \
-  $(CLIENT_BPATH)/win_resource.o \
-  $(SERVER_BPATH)/win_shared.o \
-  $(SERVER_BPATH)/win_syscon.o
-else
-  #DOBJ += $(UNIX_MAIN_CODE)
-  DOBJ += \
-  $(SERVER_BPATH)/linux_signals.o \
-  $(SERVER_BPATH)/unix_main.o \
-  $(SERVER_BPATH)/unix_shared.o
-endif
-
-ifeq ($(VM_ON),true)
-  ifeq ($(CPU),x86)
-    #DOBJ += $(SERVER_BPATH)/vm_x86.o
-    DOBJ += $(VM_X86_CODE)
-  endif
-  ifeq ($(CPU),x86_64)
-    DOBJ += $(SERVER_BPATH)/vm_x86.o
-    #DOBJ += $(VM_X86_CODE)
-  endif
-  ifeq ($(CPU),arm)
-    #DOBJ += $(SERVER_BPATH)/vm_armv7l.o
-    DOBJ += $(VM_ARM_CODE)
-  endif
-  ifeq ($(CPU),aarch64)
-    #DOBJ += $(SERVER_BPATH)/vm_aarch64.o
-    DOBJ += $(VM_AARCH64_CODE)
-  endif
-endif
-
-$(B)/$(TARGET_SERVER): $(DOBJ)
+$(B)/$(TARGET_HOST): $(HOST_OBJ)
 	$(echo_cmd) "LD $@"
-	$(Q)$(CC) -o $@ $(DOBJ) $(LDFLAGS)
+	$(Q)$(CC) -o $@ $(HOST_OBJ) $(LDFLAGS)
 
 #############################################################################
 # TOOLS:
@@ -1219,58 +1179,78 @@ install: release
 		fi 
 	done
 
+#==========================================================
+
+clean: clean-object
+	@echo "'clean' all TARGETS in project:"
+	@rm -rf $(BUILD_RELEASE)/$(TARGET_HOST)
+	@rm -rf $(BUILD_RELEASE)/$(TARGET_USER)
+	@rm -rf $(BUILD_RELEASE)/$(TARGET_RENDERER_VULKAN)
+	@rm -rf $(BUILD_RELEASE)/$(TARGET_RENDERER2)
+	@rm -rf $(BUILD_RELEASE)/$(TARGET_RENDERER1)
+	@rm -rf $(BUILD_RELEASE)$(OBJECT_SUFFIX)/$(REND2_BPATH_NAME)/stringify$(BIN_EXT)
+	@rm -rf $(BUILD_DEBUG)/$(TARGET_HOST)
+	@rm -rf $(BUILD_DEBUG)/$(TARGET_USER)
+	@rm -rf $(BUILD_DEBUG)/$(TARGET_RENDERER_VULKAN)
+	@rm -rf $(BUILD_DEBUG)/$(TARGET_RENDERER2)
+	@rm -rf $(BUILD_DEBUG)/$(TARGET_RENDERER1)
+	@rm -rf $(BUILD_DEBUG)$(OBJECT_SUFFIX)/$(REND2_BPATH_NAME)/stringify$(BIN_EXT)
+
+#----------------------------------------------------------
+
+clean-object:
+	@echo "'clean-object' all *.d & *.o project:" 
+	@rm -rf $(DEPENDS) $(ALL_OBJS)
+
+#==========================================================
+
+nuke: wipe-build clean-object
+
+#==========================================================
+
 wipe: wipe-debug wipe-release
 
-clean:
-	@echo "'clean' $(B):" 
-	@rm $(BUILD_RELEASE)/$(CLIENT_BPATH_NAME) 
-	@rm -f $(B)/$(OBJ) $(B)/$(DOBJ)
-	@rm -f $(B)/$(TARGETS)
-	@rm -rf $(BUILD_RELEASE)/$(CLIENT_BPATH_NAME)
-	@rm $(B)/$(CLIENT_BPATH_NAME)/'*.o, *.d'
-	@rm $(SERVER_BPATH)/'*.o, *.d'
-	@rm $(B)/$(REND1_BPATH_NAME)/'*.o, *.d'
-	@rm $(B)/$(REND2_BPATH_NAME)/'*.o, *.d'
-	@rm $(B)/$(RENDV_BPATH_NAME)/'*.o, *.d' 
+#----------------------------------------------------------
 
-clean2: 
-	@echo "'clean2' $(B):" 
-	@rm $(BUILD_RELEASE)/$(CLIENT_BPATH_NAME) 
-	@rm -f $(B)/$(OBJ) $(B)/$(DOBJ)
-	@rm -f $(B)/$(TARGETS)
-	@rm -rf $(BUILD_RELEASE)/$(CLIENT_BPATH_NAME)
-	@rm $(B)/$(CLIENT_BPATH_NAME)/'*.o, *.d'
-	@rm $(SERVER_BPATH)/'*.o, *.d'
-	@rm $(B)/$(REND1_BPATH_NAME)/'*.o, *.d'
-	@rm $(B)/$(REND2_BPATH_NAME)/'*.o, *.d'
-	@rm $(B)/$(RENDV_BPATH_NAME)/'*.o, *.d' 
+wipe-object:
+	@echo "'wipe-object':" 
+	@rm -rf $(BUILD_PATH)/$(DEBUG_BPATH_NAME)$(OBJECT_SUFFIX)
+	@rm -rf $(BUILD_PATH)/$(RELEASE_BPATH_NAME)$(OBJECT_SUFFIX)
 
-clean-d:
-	@echo "clean-d $(B):"
-	@if [ -d $(B) ];then (find $(B) -name '*.d' -exec rm {} \;)fi
-	@rm -f $(OBJ) $(DOBJ)
-	@rm -f $(TARGETS)
+#----------------------------------------------------------
 
 wipe-debug:
+	@echo "'wipe-debug':" 
 	@rm -rf $(BUILD_DEBUG)
+	@rm -rf $(BUILD_PATH)/$(DEBUG_BPATH_NAME)$(OBJECT_SUFFIX)
+
+#----------------------------------------------------------
 
 wipe-release:
+	@echo "'wipe-release':" 
 	@rm -rf $(BUILD_RELEASE)
+	@rm -rf $(BUILD_PATH)/$(RELEASE_BPATH_NAME)$(OBJECT_SUFFIX)
 
-wipe-build: clean
+#----------------------------------------------------------
+
+wipe-build: 
+	@echo "'wipe-build':" 
 	@rm -rf $(BUILD_PATH)
 
 #############################################################################
-# KEEP FILES (DEPENDENCIES):
+# DEPENDS (DEPENDENCIES):
 #############################################################################
 
-KEEP=$(shell find . -name '*.d')
-#include $(KEEP)
+DEPENDS = $(shell find . -name '*.d')
+ALL_OBJS = $(shell find . -name '*.o')
 
-ifneq ($(strip $(KEEP)),)
- include $(KEEP)
+#include $(DEPENDS)
+
+ifneq ($(strip $(DEPENDS)),)
+ include $(DEPENDS)
 endif
 
-.PHONY: all clean clean2 clean-debug clean-release copyfiles \
-	debug default dist distclean doFolders release \
-	targets tools toolsclean
+#############################################################################
+
+.PHONY: all clean clean-object debug default doFolders nuke release targets tools \
+	wipe wipe-build wipe-debug wipe-release wipe-object 
