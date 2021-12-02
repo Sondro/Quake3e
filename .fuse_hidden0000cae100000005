@@ -1,6 +1,0 @@
-cd .
-#!/bin/bash
-make wipe-debug
-#make
-
-read -p "Press any key to continue." x     
