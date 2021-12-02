@@ -290,15 +290,15 @@ MKDIR = mkdir
 #----------------------------------------------------------
 
 ifneq ($(call BINARY_PATH, $(PKG_CONFIG)),)
-  SDL_CODE_HEADERS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags-only-I sdl2)
+  SDL_INCLUDES ?= $(shell $(PKG_CONFIG) --silence-errors --cflags-only-I sdl2)
   SDL_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs sdl2)
-  X11_CODE_HEADERS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags-only-I x11)
+  X11_INCLUDES ?= $(shell $(PKG_CONFIG) --silence-errors --cflags-only-I x11)
   X11_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs x11)
 endif
 
 # SDL/X11 Defaults:
-ifeq ($(X11_CODE_HEADERS),)
-  X11_CODE_HEADERS = -I/usr/X11R6/include
+ifeq ($(X11_INCLUDES),)
+  X11_INCLUDES = -I/usr/X11R6/include
 endif
 ifeq ($(X11_LIBS),)
   X11_LIBS = -lX11
@@ -531,8 +531,8 @@ ifeq ($(SET_PLATFORM),darwin)
 
 #----------------------------------------------------------
 
-  ifneq ($(SDL_CODE_HEADERS),)
-    BASE_CFLAGS += $(SDL_CODE_HEADERS)
+  ifneq ($(SDL_INCLUDES),)
+    BASE_CFLAGS += $(SDL_INCLUDES)
     USER_LDFLAGS = $(SDL_LIBS)
   else
     BASE_CFLAGS += -I/Library/Frameworks/SDL2.framework/Headers
@@ -590,10 +590,10 @@ else
 #----------------------------------------------------------
 
   ifeq ($(SDL_ON_Make),1)
-    BASE_CFLAGS += $(SDL_CODE_HEADERS)
+    BASE_CFLAGS += $(SDL_INCLUDES)
     USER_LDFLAGS = $(SDL_LIBS)
   else
-    BASE_CFLAGS += $(X11_CODE_HEADERS)
+    BASE_CFLAGS += $(X11_INCLUDES)
     USER_LDFLAGS = $(X11_LIBS)
   endif
 
