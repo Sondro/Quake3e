@@ -25,11 +25,11 @@
 #  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
 #  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
 #  HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES(INCLUDING, BUT NOT
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 #  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 #  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 #  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+#  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #[=======================================================================[.rst:
@@ -69,33 +69,33 @@ This module responds to the following cache variables:
 ::
 
   SDL2_PATH
-    Set a custom SDL2 Library path(default: empty)
+    Set a custom SDL2 Library path (default: empty)
 
   SDL2_NO_DEFAULT_PATH
     Disable search SDL2 Library in default path.
-      If SDL2_PATH(default: ON)
-      Else(default: OFF)
+      If SDL2_PATH (default: ON)
+      Else (default: OFF)
 
   SDL2_INCLUDE_DIR
     SDL2 headers path.
 
   SDL2_LIBRARY
-    SDL2 Library(.dll, .so, .a, etc) path.
+    SDL2 Library (.dll, .so, .a, etc) path.
 
   SDL2MAIN_LIBRAY
-    SDL2main Library(.a) path.
+    SDL2main Library (.a) path.
 
   SDL2_BUILDING_LIBRARY
     This flag is useful only when linking to SDL2_LIBRARIES insead of
     SDL2::Main. It is required only when building a library that links to
-    SDL2_LIBRARIES, because only applications need main()(No need to also
+    SDL2_LIBRARIES, because only applications need main() (No need to also
     link to SDL2main).
     If this flag is defined, then no SDL2main will be added to SDL2_LIBRARIES
     and no SDL2::Main target will be created.
 
 
 Don't forget to include SDLmain.h and SDLmain.m in your project for the
-OS X framework based version.(Other versions link to -lSDL2main which
+OS X framework based version. (Other versions link to -lSDL2main which
 this module will try to find on your behalf.) Also for OS X, this
 module will automatically add the -framework Cocoa on your behalf.
 
@@ -116,25 +116,25 @@ $SDL2DIR is an environment variable that would correspond to the
 
 
 Created by Amine Ben Hassouna:
-  Adapt FindSDL.cmake to SDL2(FindSDL2.cmake).
+  Adapt FindSDL.cmake to SDL2 (FindSDL2.cmake).
   Add cache variables for more flexibility:
-    SDL2_PATH, SDL2_NO_DEFAULT_PATH(for details, see doc above).
+    SDL2_PATH, SDL2_NO_DEFAULT_PATH (for details, see doc above).
   Mark 'Threads' as a required dependency for non-OSX systems.
   Modernize the FindSDL2.cmake module by creating specific targets:
-    SDL2::Core and SDL2::Main(for details, see doc above).
+    SDL2::Core and SDL2::Main (for details, see doc above).
 
 
 Original FindSDL.cmake module:
   Modified by Eric Wing.  Added code to assist with automated building
   by using environmental variables and providing a more
   controlled/consistent search behavior.  Added new modifications to
-  recognize OS X frameworks and additional Unix paths(FreeBSD, etc).
+  recognize OS X frameworks and additional Unix paths (FreeBSD, etc).
   Also corrected the header search path to follow "proper" SDL
   guidelines.  Added a search for SDLmain which is needed by some
   platforms.  Added a search for threads which is needed by some
   platforms.  Added needed compile switches for MinGW.
 
-On OSX, this will prefer the Framework version(if found) over others.
+On OSX, this will prefer the Framework version (if found) over others.
 People will have to manually change the cache value of SDL2_LIBRARY to
 override this selection or set the SDL2_PATH variable or the CMake
 environment CMAKE_INCLUDE_PATH to modify the search paths.
@@ -142,7 +142,7 @@ environment CMAKE_INCLUDE_PATH to modify the search paths.
 Note that the header path has changed from SDL/SDL.h to just SDL.h
 This needed to change because "proper" SDL convention is #include
 "SDL.h", not <SDL/SDL.h>.  This is done for portability reasons
-because not all systems place things in SDL/(see FreeBSD).
+because not all systems place things in SDL/ (see FreeBSD).
 #]=======================================================================]
 
 # Define options for searching SDL2 Library in a custom path
@@ -173,7 +173,7 @@ find_path(SDL2_INCLUDE_DIR SDL.h
         include/SDL2 include
         PATHS ${SDL2_PATH}
         DOC "Where the SDL2 headers can be found"
-       )
+        )
 
 set(SDL2_INCLUDE_DIRS "${SDL2_INCLUDE_DIR}")
 
@@ -193,14 +193,14 @@ find_library(SDL2_LIBRARY
         PATH_SUFFIXES lib ${VC_LIB_PATH_SUFFIX}
         PATHS ${SDL2_PATH}
         DOC "Where the SDL2 Library can be found"
-       )
+        )
 
 set(SDL2_LIBRARIES "${SDL2_LIBRARY}")
 
 if(NOT SDL2_BUILDING_LIBRARY)
     if(NOT SDL2_INCLUDE_DIR MATCHES ".framework")
         # Non-OS X framework versions expect you to also dynamically link to
-        # SDL2main. This is mainly for Windows and OS X. Other(Unix) platforms
+        # SDL2main. This is mainly for Windows and OS X. Other (Unix) platforms
         # seem to provide SDL2main for compatibility even though they don't
         # necessarily need it.
 
@@ -215,7 +215,7 @@ if(NOT SDL2_BUILDING_LIBRARY)
                     /opt/csw
                     /opt
                     "${SDL2MAIN_LIBRARY_PATHS}"
-                   )
+                    )
         endif()
 
         find_library(SDL2MAIN_LIBRARY
@@ -226,7 +226,7 @@ if(NOT SDL2_BUILDING_LIBRARY)
                 PATH_SUFFIXES lib ${VC_LIB_PATH_SUFFIX}
                 PATHS ${SDL2MAIN_LIBRARY_PATHS}
                 DOC "Where the SDL2main library can be found"
-               )
+                )
         unset(SDL2MAIN_LIBRARY_PATHS)
     endif()
 endif()
@@ -238,7 +238,7 @@ endif()
 if(NOT APPLE)
     find_package(Threads QUIET)
     if(NOT Threads_FOUND)
-        set(SDL2_THREADS_NOT_FOUND "Could NOT find Threads(Threads is required by SDL2).")
+        set(SDL2_THREADS_NOT_FOUND "Could NOT find Threads (Threads is required by SDL2).")
         if(SDL2_FIND_REQUIRED)
             message(FATAL_ERROR ${SDL2_THREADS_NOT_FOUND})
         else()
@@ -329,7 +329,7 @@ mark_as_advanced(SDL2_PATH
         SDL2_BUILDING_LIBRARY)
 
 
-# SDL2:: targets(SDL2::Core and SDL2::Main)
+# SDL2:: targets (SDL2::Core and SDL2::Main)
 if(SDL2_FOUND)
 
     # SDL2::Core target

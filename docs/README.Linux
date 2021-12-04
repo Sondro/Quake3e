@@ -147,7 +147,7 @@ Q3Test uses the XFree86 VidModeExtension facilities if available to provide
 fullscreen play. This does not apply to 3Dfx passthrough based cards, since
 the passthrough cable takes over the video display upon activation anyway.
 
-When configuring your X11 host, make sure that you include lower
+When configuring your X11 server, make sure that you include lower
 resolution modes such as 640x480 and 800x600. Q3Test will auto-switch to
 these modes using the VidModeExtension if you select fullscreen from the
 graphics options menu. If the lower resolution modes are not listed in the
@@ -262,7 +262,7 @@ root privileges. There are two exceptions to this:
           access it.
 
 You will have to be running under X11 or have the DISPLAY variable pointed
-to a OpenGL glX capable X Host.
+to a OpenGL glX capable X Server.
 
 By default, Q3Test tries to find the following OpenGL libraries in this
 order:
@@ -313,7 +313,7 @@ frame per second!
 
 A. Most of the current drivers for Linux do not support hardware
 acceleration at any bit depth other than 15 or 16 bit color. Make sure
-that you specify 16 bit color when you run your X11 Host, such as:
+that you specify 16 bit color when you run your X11 Server, such as:
 
 	startx -- -bpp 16
 
@@ -321,9 +321,9 @@ that you specify 16 bit color when you run your X11 Host, such as:
 Q. I have a Voodoo3.  When I start the game, I send up at a low resolution
 version of my desktop.
 
-A. The current Voodoo3 X11 Hosts have problems with DGA Mouse support.
+A. The current Voodoo3 X11 Servers have problems with DGA Mouse support.
 This is a known driver issue and will be fixed in newer revisions of the
-Voodoo3 X11 Host.  Run the game with the following to disable it:
+Voodoo3 X11 Server.  Run the game with the following to disable it:
 	./linuxquake3 +set in_dgamouse 0
 
 
