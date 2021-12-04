@@ -1,6 +1,6 @@
 =================================================
 
-This section describes format of userinfo filter files pointed by \sv_filter server cvar.
+This section describes format of userinfo filter files pointed by \sv_filter host cvar.
 
 =================================================
 
@@ -42,7 +42,7 @@ Multiple keys/comparisons inside single scope:
 
 	ip "127.0.0.1" {
 		name * "*^0*" {
-			drop "Black color is not allowed on this server"
+			drop "Black color is not allowed on this host"
 		}
 		name "SomeBadGuy" {
 			drop "Bad Guy."
@@ -59,7 +59,7 @@ Date key usage example:
 
 If there is "date" keys which may expire - engine will perform regular checks and rewrite filter file contents to clear expired ban entries
 
-You can also use '$' prefix in <value> to dereference any server-side cvar, for example:
+You can also use '$' prefix in <value> to dereference any host-side cvar, for example:
 
 	snaps < $sv_fps {
 		drop "raize your \snaps"
@@ -68,7 +68,7 @@ You can also use '$' prefix in <value> to dereference any server-side cvar, for 
 Example of custom password cvar fltering:
 
 	xxpassword != "12345678" {
-		drop "sorry, this is a private server"
+		drop "sorry, this is a private host"
 	}
 
 	I.e. user must do "\setu xxpassword 12345678" to be able to connect
@@ -76,7 +76,7 @@ Example of custom password cvar fltering:
 
 =================================================
 
-This section describes available server-side options and commands
+This section describes available host-side options and commands
 
 =================================================
 
@@ -98,15 +98,15 @@ This section describes available server-side options and commands
 Examples:
 	\filter 0 name cl_guid
 
-		ban client 0 by his "name" and "cl_guid" userinfo fields
+		ban user 0 by his "name" and "cl_guid" userinfo fields
 
 	\filter 0 reason "bad guy."
 
-		ban client by his "ip" address field with a reason "bad guy."
+		ban user by his "ip" address field with a reason "bad guy."
 
 	\filter 0 ip name date +1d
 
-		ban client for 1 day by his ip and name
+		ban user for 1 day by his ip and name
 
 
 -------------------------------------------------

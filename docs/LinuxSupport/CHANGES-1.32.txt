@@ -2,7 +2,7 @@ CHANGES 1.32
 
 11/13/2002 - 1.32b
 
-Update to the Linux client, fixing a number of issues:
+Update to the Linux user, fixing a number of issues:
 
 
 - Text mode install broken on glibc 2.3 (Debian Sid)
@@ -40,10 +40,10 @@ it didn't make much sense to remove the SMP binary, we have both now.
 
 
 - Fixing broken mouse on Suse:
-Starting with XFree 4.2, the event timestamps returned by the X server 
+Starting with XFree 4.2, the event timestamps returned by the X host 
 are no longer matching gettimeofday. And there is currently no API in X 
 to provide easy synchronisation. 1.32 introduced improved event timing 
-by correcting event time with X server event timestamp (sub-frame timing).
+by correcting event time with X host event timestamp (sub-frame timing).
 This worked fine with XFree 4.1, and no longer does. 1.32b adds a safe
 check to work again with XFree 4.2, but basically the input timing is
 back to 1.31 quality.
@@ -64,8 +64,8 @@ General:
 
 - network code:
   improved fragmented messages handling
-  map change while client loads map no longer causes an 'Invalid .PK3' error
-  map_restart while client loads map no longer causes a reload
+  map change while user loads map no longer causes an 'Invalid .PK3' error
+  map_restart while user loads map no longer causes a reload
   fixing donedl being ignored after autodl if map_restart'ed
 - the demo command has a list of compatible protocols, it will loop through 66 67 68
   you can do '/demo four' and it will try four.dm_66 four.dm_67 four.dm_68
@@ -75,11 +75,11 @@ General:
   wheel to scroll, ctrl+wheel to scroll faster, shift+wheel to scroll history
 
 - UI in baseq3/ and missionpack/ for PunkBuster configuration
-  punkbuster server in server creation dialog (sv_punkbuster)
-  punkbuster client in server browser (cl_punkbuster)
+  punkbuster host in host creation dialog (sv_punkbuster)
+  punkbuster user in host browser (cl_punkbuster)
   added PB Yes/No to the browsers
 - removed obsolete MPlayer UI stuff
-- bumped server browser to handle up to 4096 servers
+- bumped host browser to handle up to 4096 hosts
 
 - IP maintained in userinfo
 - cl_guid in userinfo (as part of PB integration)
@@ -91,41 +91,41 @@ General:
   NOTE: using PunkBuster's banning system is advised instead though
 - rcon: some fixes to the buffering to avoid overflowing and dropping parts of the message 
 - rcon: now supports quoting /rcon g_motd "foo bar"
-- added SVF_CLIENTMASK (0x00000002), works only with <= 32 players
+- added SVF_USERMASK (0x00000002), works only with <= 32 players
 	set bitmask of players to which send entity
 - pushed cl_maxpackets upper limit to 125
-- added [skipnotify] from RTCW, use to display in the console only, but not on client screen
+- added [skipnotify] from RTCW, use to display in the console only, but not on user screen
 	(also fixes pb_msgprefix and pb_sv_msgprefix)
 
 - new cvar sv_lanForceRate (defaults 1):
-  forces LAN clients to the maximum rate instead of accepting client setting
+  forces LAN users to the maximum rate instead of accepting user setting
   (1 is the default behaviour, backward compatible)
 
 - new cvar sv_strictAuth (defaults 1):
-  server side variable to control wether strict CDKEY auth should be performed with the auth server
-  this is required if you want reliable cl_guid for the server (for users tracking)
+  host side variable to control wether strict CDKEY auth should be performed with the auth host
+  this is required if you want reliable cl_guid for the host (for users tracking)
 
 - filesystem:
-  client re-orders it's pk3s according to the order given by server
+  user re-orders it's pk3s according to the order given by host
   (fixes some 'Invalid .PK3 files referenced' situations
 
 - fixed invisible entities/players bug (thanks goes to Rick Johnson / Raven for this one!)
 - update x86 VM code (better and safer optimisations) (Richk Johnson / Raven too)
-- clearing client gentity before GAME_INIT call
-- failing vote if there's only one voting client (fixes exploit on 2-player server where one player votes then disconnects, forcing vote to pass)
+- clearing user gentity before GAME_INIT call
+- failing vote if there's only one voting user (fixes exploit on 2-player host where one player votes then disconnects, forcing vote to pass)
 
 - added trap_FS_Seek
 
-- renderer fix:
-  if client game code registers a shader after drawsurfaces are generated but before frame is rendered
+- gfxer fix:
+  if user game code registers a shader after drawsurfaces are generated but before frame is drawed
   had a one-frame visual glitch (shader indexes messed up)
-- renderer fix:
+- gfxer fix:
   r_roundImagesDown 0 + map q3dm1 -> crash (buffer overflow fix)
-- renderer fix:
+- gfxer fix:
   fixed a crash in widescreen displays (q3dm11)
-- renderer fix:
+- gfxer fix:
   MAX_SHADERS up to 2^12  
-- renderer fix:
+- gfxer fix:
   moved screenshot from frontend to backend, fixes broken r_smp 1 screenshots
 
 - TA fixes:
@@ -143,7 +143,7 @@ Linux specific:
 
 - no longer trying to load libMesaVoodooGL.so
   obsolete code, was confusing when trying to setup correct OpenGL acceleration
-- SMP support in the renderer. Detects CPU count, r_smp 1 default if available. (thanks to Gareth Hughes for contributing this)
+- SMP support in the gfxer. Detects CPU count, r_smp 1 default if available. (thanks to Gareth Hughes for contributing this)
 - changed default GL driver from libGL.so to libGL.so.1
   see LSB 1.2 spec: http://www.linuxbase.org/spec/refspecs/LSB_1.2.0/gLSB/libgl.html
 - Handle Ctrl and Space key together correctly (Ctrl was disabling Space)    

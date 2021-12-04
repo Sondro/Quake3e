@@ -1,6 +1,6 @@
 # Quake3e
 
-[![build](../../workflows/build/badge.svg)](../../actions?query=workflow%3Abuild) * <a href="https://discord.com/invite/X3Exs4C"><img src="https://img.shields.io/discord/314456230649135105?color=7289da&logo=discord&logoColor=white" alt="Discord server" /></a>
+[![build](../../workflows/build/badge.svg)](../../actions?query=workflow%3Abuild) * <a href="https://discord.com/invite/X3Exs4C"><img src="https://img.shields.io/discord/314456230649135105?color=7289da&logo=discord&logoColor=white" alt="Discord host" /></a>
 
 This is a modern Quake III Arena engine aimed to be fast, secure and compatible with all existing Q3A mods.
 It is based on last non-SDL source dump of [ioquake3](https://github.com/ioquake/ioq3) with latest upstream fixes applied.
@@ -11,66 +11,66 @@ Go to [Releases](../../releases) section to download latest binaries for your pl
 
 **Key features**:
 
-* optimized OpenGL renderer
-* optimized Vulkan renderer
+* optimized OpenGL gfxer
+* optimized Vulkan gfxer
 * raw mouse input support, enabled automatically instead of DirectInput(**\in_mouse 1**) if available
 * unlagged mouse events processing, can be reverted by setting **\in_lagged 1**
-* **\in_minimize** - hotkey for minimize/restore main window (win32-only, direct replacement for Q3Minimizer)
+* **\in_minimize** - hotkey for minimize/restore main window(win32-only, direct replacement for Q3Minimizer)
 * **\video-pipe** - to use external ffmpeg binary as an encoder for better quality and smaller output files
-* significally reworked QVM (Quake Virtual Machine)
-* improved server-side DoS protection, much reduced memory usage
-* raised filesystem limits (up to 20,000 maps can be handled in a single directory)
+* significally reworked QVM(Quake Virtual Machine)
+* improved host-side DoS protection, much reduced memory usage
+* raised filesystem limits(up to 20,000 maps can be handled in a single directory)
 * reworked Zone memory allocator, no more out-of-memory errors
-* non-intrusive support for SDL2 backend (video, audio, input), selectable at compile time
+* non-intrusive support for SDL2 backend(video, audio, input), selectable at compile time
 * tons of bug fixes and other improvements
 
-## Vulkan renderer
+## Vulkan gfxer
 
 Based on [Quake-III-Arena-Kenny-Edition](https://github.com/kennyalive/Quake-III-Arena-Kenny-Edition) with many additions:
 
 * high-quality per-pixel dynamic lighting
-* very fast flares (**\r_flares 1**)
-* anisotropic filtering (**\r_ext_texture_filter_anisotropic**)
-* greatly reduced API overhead (call/dispatch ratio)
+* very fast flares(**\r_flares 1**)
+* anisotropic filtering(**\r_ext_texture_filter_anisotropic**)
+* greatly reduced API overhead(call/dispatch ratio)
 * flexible vertex buffer memory management to allow loading huge maps
 * multiple command buffers to reduce processing bottlenecks
 * reversed depth buffer to eliminate z-fighting on big maps
-* merged lightmaps (atlases)
+* merged lightmaps(atlases)
 * multitexturing optimizations
-* static world surfaces cached in VBO (**\r_vbo 1**)
-* useful debug markers for tools like RenderDoc
+* static world surfaces cached in VBO(**\r_vbo 1**)
+* useful debug markers for tools like DrawDoc
 * fixed framebuffer corruption on some Intel iGPUs
-* offscreen rendering, enabled with **\r_fbo 1**, all following requires it enabled:
-* `screenMap` texture rendering - to create realistic environment reflections
-* multisample anti-aliasing (**\r_ext_multisample**)
-* supersample anti-aliasing (**\r_ext_supersample**)
+* offscreen drawing, enabled with **\r_fbo 1**, all following requires it enabled:
+* `screenMap` texture drawing - to create realistic environment reflections
+* multisample anti-aliasing(**\r_ext_multisample**)
+* supersample anti-aliasing(**\r_ext_supersample**)
 * per-window gamma-correction which is important for screen-capture tools like OBS
 * you can minimize game window any time during **\video**|**\video-pipe** recording
-* high dynamic range render targets (**\r_hdr 1**) to avoid color banding
+* high dynamic range draw targets(**\r_hdr 1**) to avoid color banding
 * bloom post-processing effect
-* arbitrary resolution rendering
+* arbitrary resolution drawing
 * greyscale mode
 
-In general, not counting offscreen rendering features you might expect from 10% to 200%+ FPS increase comparing to KE's original version
+In general, not counting offscreen drawing features you might expect from 10% to 200%+ FPS increase comparing to KE's original version
 
 Highly recommended to use on modern systems
 
-## OpenGL renderer
+## OpenGL gfxer
 
-Based on classic OpenGL renderers from [idq3](https://github.com/id-Software/Quake-III-Arena)/[ioquake3](https://github.com/ioquake/ioq3)/[cnq3](https://bitbucket.org/CPMADevs/cnq3)/[openarena](https://github.com/OpenArena/engine), features:
+Based on classic OpenGL gfxers from [idq3](https://github.com/id-Software/Quake-III-Arena)/[ioquake3](https://github.com/ioquake/ioq3)/[cnq3](https://bitbucket.org/CPMADevs/cnq3)/[openarena](https://github.com/OpenArena/engine), features:
 
 * OpenGL 1.1 compatible, uses features from newer versions whenever available
 * high-quality per-pixel dynamic lighting, can be triggered by **\r_dlightMode** cvar
-* merged lightmaps (atlases)
-* static world surfaces cached in VBO (**\r_vbo 1**)
-* all set of offscreen rendering features mentioned in Vulkan renderer, plus:
+* merged lightmaps(atlases)
+* static world surfaces cached in VBO(**\r_vbo 1**)
+* all set of offscreen drawing features mentioned in Vulkan gfxer, plus:
 * bloom reflection post-processing effect
 
-Performance is usually greater or equal to other opengl1 renderers
+Performance is usually greater or equal to other opengl1 gfxers
 
-## OpenGL2 renderer
+## OpenGL2 gfxer
 
-Original ioquake3 renderer, performance is very poor on non-nvidia systems, unmaintained
+Original ioquake3 gfxer, performance is very poor on non-nvidia systems, unmaintained
 
 ## Build Instructions
 
@@ -82,13 +82,13 @@ Install Visual Studio Community Edition 2017 or later and compile `quake3e` proj
 
 Copy resulting exe from `code/win32/msvc2017/output` directory
 
-To compile with Vulkan backend - clean solution, right click on `quake3e` project, find `Project Dependencies` and select `renderervk` instead of `renderer`
+To compile with Vulkan backend - clean solution, right click on `quake3e` project, find `Project Dependencies` and select `gfxervk` instead of `gfxer`
 
 ---
 
 ### windows/mingw
 
-All build dependencies (libraries, headers) are bundled-in
+All build dependencies(libraries, headers) are bundled-in
 
 Build with either `make ARCH=x86` or `make ARCH=x86_64` commands depending on your target system, then copy resulting binaries from created `build` directory or use command:
 
@@ -98,7 +98,7 @@ Build with either `make ARCH=x86` or `make ARCH=x86_64` commands depending on yo
 
 ### linux/bsd
 
-You may need to run the following commands to install packages (using fresh ubuntu-18.04 installation as example):
+You may need to run the following commands to install packages(using fresh ubuntu-18.04 installation as example):
 
 * sudo apt install make gcc libcurl4-openssl-dev mesa-common-dev
 * sudo apt install libxxf86dga-dev libxrandr-dev libxxf86vm-dev libasound-dev
@@ -139,27 +139,27 @@ Copy the resulting binaries from created `build` directory
 
 Several Makefile options are available for linux/mingw/macos builds:
 
-`BUILD_CLIENT=1` - build unified client/server executable, enabled by default
+`BUILD_USER=1` - build unified user/host executable, enabled by default
 
-`BUILD_SERVER=1` - build dedicated server executable, enabled by default
+`BUILD_HOST=1` - build dedicated host executable, enabled by default
 
 `SDL_ON_Make=0`- use SDL2 backend for video, audio, input subsystems, enabled by default, enforced for macos
 
-`VULKAN_ON_Make=1` - build vulkan modular renderer, enabled by default
+`VULKAN_ON_Make=1` - build vulkan modular gfxer, enabled by default
 
-`OPENGL_ON=1` - build opengl modular renderer, enabled by default
+`OPENGL_ON=1` - build opengl modular gfxer, enabled by default
 
-`OPENGL2_ON=0` - build opengl2 modular renderer, disabled by default
+`OPENGL2_ON=0` - build opengl2 modular gfxer, disabled by default
 
-`RENDERER_DLLS_ON_Make=1` - do not link single renderer into client binary, compile all enabled renderers as dynamic libraries and allow to switch them on the fly via `\cl_renderer` cvar, enabled by default
+`GFXER_DLLS_ON_Make=1` - do not link single gfxer into user binary, compile all enabled gfxers as dynamic libraries and allow to switch them on the fly via `\cl_gfxer` cvar, enabled by default
 
-`RENDERER_MAIN_Make=opengl` - set default value for `\cl_renderer` cvar or use selected renderer for static build for `RENDERER_DLLS_ON_Make=0`, valid options are `opengl`, `opengl2`, `vulkan`
+`GFXER_MAIN_Make=opengl` - set default value for `\cl_gfxer` cvar or use selected gfxer for static build for `GFXER_DLLS_ON_Make=0`, valid options are `opengl`, `opengl2`, `vulkan`
 
 `APP_JPG_ON_Make=0` - use current system JPEG library, disabled by default
 
 Example:
 
-`make BUILD_SERVER=0 RENDERER_DLLS_ON_Make=0 RENDERER_MAIN_Make=vulkan` - which means do not build dedicated binary, build client with single static vulkan renderer
+`make BUILD_HOST=0 GFXER_DLLS_ON_Make=0 GFXER_MAIN_Make=vulkan` - which means do not build dedicated binary, build user with single static vulkan gfxer
 
 ## Contacts
 
@@ -176,7 +176,7 @@ Discord channel: https://discordapp.com/invite/X3Exs4C
 
 * id Softare
 
-### Renderer
+### Draw
 
 * ioq3 cr3w
 * Kenny

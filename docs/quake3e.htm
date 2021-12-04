@@ -1,6 +1,6 @@
 <html><head></head><title>Quake3e</title>
 <p>
-This client aims to be fully compatible with original baseq3 and other mods
+This user aims to be fully compatible with original baseq3 and other mods
 while trying to be fast, reliable and bug-free.
 <br>
 It is based on ioquake3-r1160 (latest non-SDL revision) with upstream patches an many custom improvements.<br>
@@ -13,7 +13,7 @@ It is based on ioquake3-r1160 (latest non-SDL revision) with upstream patches an
 <li>raized filesystem limits, much faster startup with 1000+ pk3 files in use, level restart times were also reduced as well</li>
 <li><b>\fs_locked</b> <font color=silver><b>0</b>|1</font> - keep opened pk3 files locked or not, removes pk3 file limit when unlocked</li>
 </ul>
-<b>Client-specific changes/additions:</b>
+<b>User-specific changes/additions:</b>
 <ul>
 <li>raw mouse input support, enabled automatically instead of DirectInput(<b>\in_mouse 1</b>) on Windows XP and newer windows operating systems</li>
 <li>unlagged mouse processing, can be reverted by setting <b>\in_lagged 1</b></li>
@@ -30,11 +30,11 @@ It is based on ioquake3-r1160 (latest non-SDL revision) with upstream patches an
 <li>hardcoded Shift+PrintScreen - for "\screenshotBMP"</li>
 <li><b>\com_maxfpsUnfocused</b> - will save cpu when inactive,set to your desktop refresh rate, for example</li>
 <li><b>\com_skipIdLogo</b> <font color=silver><b>0</b>|1</font>- skip playing idlogo movie at startup</li>
-<li><b>\com_yieldCPU </b>&lt;milliseconds&gt; - try to sleep specified amout of time between rendered frames when game is active, this will greatly reduce CPU load, use <b>0</b> only if you're experiencing some lags (also it is usually reduces performance on integrated graphics because CPU steals GPU's power budget)</li>
+<li><b>\com_yieldCPU </b>&lt;milliseconds&gt; - try to sleep specified amout of time between drawed frames when game is active, this will greatly reduce CPU load, use <b>0</b> only if you're experiencing some lags (also it is usually reduces performance on integrated graphics because CPU steals GPU's power budget)</li>
 <li><b>\r_defaultImage</b> <font color=silver>&lt;filename&gt;|#rgb|#rrggbb</font> - replace default (missing) image texture by either exact file or solid #rgb|#rrggbb background color</li>
 <li><b>\r_vbo</b> <font color=silver><b>0</b>|1</font> - use Vertex Buffer Objects to cache static map geometry, may improve FPS on modern GPUs, increases hunk memory usage by 15-30MB (map-dependent)</li>
 <div id="r_fbo"></div>
-<li><b>\r_fbo</b> <font color=silver><b>0</b>|1</font> - use framebuffer objects, enables gamma correction in windowed mode and allows arbitrary size (i.e. greater than logical desktop resolution) screenshot/video capture, required for bloom, hdr rendering, anti-aliasing, greyscale effects, OpenGL 3.0+ required</li>
+<li><b>\r_fbo</b> <font color=silver><b>0</b>|1</font> - use framebuffer objects, enables gamma correction in windowed mode and allows arbitrary size (i.e. greater than logical desktop resolution) screenshot/video capture, required for bloom, hdr drawing, anti-aliasing, greyscale effects, OpenGL 3.0+ required</li>
 <li><b>\r_hdr</b> <font color=silver>-1|<b>0</b>|1</font> - select texture format for framebuffer:<br>
 &nbsp;&nbsp;-1 - 4-bit, for testing purposes, heavy color banding, might not work on all systems<br>
 &nbsp;&nbsp; 0 - 8 bit, default, moderate color banding with multi-stage shaders<br>
@@ -48,7 +48,7 @@ It is based on ioquake3-r1160 (latest non-SDL revision) with upstream patches an
 <li><b>\r_modeFullscreen</b> - dedicated mode string for fullscreen mode, set to -2 to use desktop resolution, set empty to use <b>\r_mode</b> in all cases</li>
 <li><b>\r_nomip</b> <font color=silver><b>0</b>|1</font>- apply picmip only on worldspawn textures</li>
 <li><b>\r_neatsky</b> <font color=silver><b>0</b>|1</font> - nopicmip for skyboxes</li>
-<li><b>\r_greyscale</b> <font color=silver>[<b>0</b>..1.0]</font> - desaturates rendered frame, requires <b><a href="#r_fbo">\r_fbo 1</a></b>, can be changed on 	the fly</li>
+<li><b>\r_greyscale</b> <font color=silver>[<b>0</b>..1.0]</font> - desaturates drawed frame, requires <b><a href="#r_fbo">\r_fbo 1</a></b>, can be changed on 	the fly</li>
 <li><b>\r_mapGreyScale</b> <font color=silver>[-1.0..1.0]</font> - desaturate world map textures only, works independently from <b>\r_greyscale</b>, negative values desaturates lightmaps only</li>
 <li><b>\r_ext_multisample</b> <font color=silver><b>0</b>|2|4|6|8</font> - multi-sample anti-aliasing, requires <b><a href="#r_fbo">\r_fbo 1</a></b>, can be changed on the fly</li>
 <li><b>\r_ext_supersample</b> <font color=silver><b>0</b>|1</font> - super-sample anti-aliasing, requires <b><a href="#r_fbo">\r_fbo 1</a></b></li>
@@ -56,7 +56,7 @@ It is based on ioquake3-r1160 (latest non-SDL revision) with upstream patches an
 <li><b>\r_noportals</b> <font color=silver><b>0</b>|1|2</font> - disable in-game portals (1), and mirrors too (2)</li>
 <li>negative <b>\r_overBrightBits</b> - force hardware gamma in windowed mode <i>(not actual with <b><a href="#r_fbo">\r_fbo 1</a></b>)</i></li>
 <li><a href="#video-pipe"><b>\video-pipe</b></a>&nbsp;<font color=silver>&lt;filename&gt;</font> - redirect captured video to ffmpeg input pipe and save encoded file as &lt;filename&gt;</li>
-<li><a href="#arr"><b>\r_renderWidth</b> &amp; <b>\r_renderHeight</b></a> - arbitrary resolution rendering, requires <b><a href="#r_fbo">\r_fbo 1</a></b></li>
+<li><a href="#arr"><b>\r_drawWidth</b> &amp; <b>\r_drawHeight</b></a> - arbitrary resolution drawing, requires <b><a href="#r_fbo">\r_fbo 1</a></b></li>
 <li><b>\cl_conColor [RRR GGG BBB AAA]</b> - custom console color, <u>non-archived, use <b>\seta</b> command to set archive flag and store in config</u></li>
 <li><b>\cl_autoNudge</b> <font color=silver>[<b>0</b>..1]</font> - automatic time nudge that uses your average ping as the time nudge, values:<br>
 &nbsp;&nbsp; 0 - use fixed <b>\cl_timeNudge</b><br>
@@ -66,25 +66,25 @@ It is based on ioquake3-r1160 (latest non-SDL revision) with upstream patches an
 <li>less spam in console (try to set "\developer 1" to see what important things you missing)</li>
 </li>
 <li>faster shader loading, tolerant to non-fatal errors</li>
-<li><b>fast client downloads (http/ftp redirection)</b></li>
-<li><a href="#dlmap"><b>\download</b> and <b>dlmap</b> commands</a> - fast client-initiated downloads from specified map server</li>
+<li><b>fast user downloads (http/ftp redirection)</b></li>
+<li><a href="#dlmap"><b>\download</b> and <b>dlmap</b> commands</a> - fast user-initiated downloads from specified map host</li>
 <li><b>you can use \record during \demo playback</b></li>
 <li><a href="#condstages"><b>conditional shader stages</b></a></li>
 <li><b>linear dynamic lights</b></li>
 </ul>
 
-<b>Server-specific changes/additions:</b>
+<b>Host-specific changes/additions:</b>
 <ul>
-<li><b>\sv_levelTimeReset</b> <font color=silver><b>0</b>|1</font> - reset or do not reset leveltime after new map loads, when enabled - fixes gfx for clients affected by "frameloss" bug, however it may be necessary disable in case of troubles with GTV</li>
-<li><b>\sv_maxclientsPerIP</b> - limit number of simultaneous connections from the same IP address</li>
+<li><b>\sv_levelTimeReset</b> <font color=silver><b>0</b>|1</font> - reset or do not reset leveltime after new map loads, when enabled - fixes gfx for users affected by "frameloss" bug, however it may be necessary disable in case of troubles with GTV</li>
+<li><b>\sv_maxusersPerIP</b> - limit number of simultaneous connections from the same IP address</li>
 <li>much improved DDoS protection</li>
-<li><b>\sv_minPing</b> and <b>\sv_maxPing</b> were removed because of new much better client connecion code</li>
+<li><b>\sv_minPing</b> and <b>\sv_maxPing</b> were removed because of new much better user connecion code</li>
 <li>userinfo filtering system, see docs/filter.txt</li>
-<li><b>rcon</b> now is always available on dedicated servers</li>
+<li><b>rcon</b> now is always available on dedicated hosts</li>
 <li><b>rconPassword2</b> - hidden master rcon password that can be set only from command line, i.e.<br>
 &nbsp;&nbsp;<b> +set rconPassword2 "123456"</b><br>
 can be used to change/revoke compromised <b>rconPassword</b></li>
-<li>significally reduced memory usage for client slots</li>
+<li>significally reduced memory usage for user slots</li>
 </li>
 </ul>
 
@@ -101,9 +101,9 @@ can be used to change/revoke compromised <b>rconPassword</b></li>
 <br>
 
 <hr>
-<p><b>Fast client downloads</b><br><br>
-Usually downloads in Q3 is slow because all dowloaded data is requested/revieced from game server directly.
-So called `download redirection' allows very fast downloads because game server just tells you from where you should download all required mods/maps etc. - it can be internet or local http/ftp server<br>
+<p><b>Fast user downloads</b><br><br>
+Usually downloads in Q3 is slow because all dowloaded data is requested/revieced from game host directly.
+So called `download redirection' allows very fast downloads because game host just tells you from where you should download all required mods/maps etc. - it can be internet or local http/ftp host<br>
 So what you need:
 <ul>
 <li>set <b>sv_dlURL</b> cvar to download location, for example:<br>
@@ -113,13 +113,13 @@ So what you need:
 </li>
 
 <li>Fill your download location with files.<br>
- &nbsp;&nbsp;Please note that you should post <u>ALL</u> files that client may download, don't worry about pk3 overflows etc. on client side as client will download and use only required files
+ &nbsp;&nbsp;Please note that you should post <u>ALL</u> files that user may download, don't worry about pk3 overflows etc. on user side as user will download and use only required files
 </li>
 </ul>
 <br>
 <hr>
 <div id="dlmap"></div>
-<p><b>Fast client-initiated downloads</b><br><br>
+<p><b>Fast user-initiated downloads</b><br><br>
 You can easy download pk3 files you need from any ftp/http/etc resource via following commands: <br>
 
 <b>\download</b> <b>filename</b>[.pk3]<br>
@@ -148,7 +148,7 @@ To stop download just specify '-' as argument:<br>
 <br>
 <hr>
 <p> <b>Built-in URL-filter</b><br><br>
-There is ability to launch Quake3 1.32e client directly from your browser
+There is ability to launch Quake3 1.32e user directly from your browser
 by just clicking on URL that contains <b>q3a://</b>
 instead of usual <b>http://</b> or <b>ftp://</b> protocol headers<br><br>
 
@@ -182,7 +182,7 @@ console
 {
  nopicmip
  nomipmaps
- if ( $r_vertexLight == 1 && $r_dynamicLight )
+ if ($r_vertexLight == 1 && $r_dynamicLight)
  {
   map image1.tga
   blendFunc blend
@@ -212,10 +212,10 @@ And since ffmpeg can utilize all available CPU cores for faster encoding - make 
 <br>
 <br>
 <hr>
-<div id="arr"></div><b>Arbitrary resolution rendering</b><br>
+<div id="arr"></div><b>Arbitrary resolution drawing</b><br>
 <br>
-Use <b>\r_renderWidth</b> and <b>\r_renderHeight</b> cvars to set persistant rendering resolution, i.e. game frame will be rendered at this resolution and later upscaled/downscaled to window size set by either <b>\r_mode</b> or <b>\r_modeFullscreen</b> cvars.<br>
-Cvar <b>\r_renderScale</b> controls upscale/downscale behavior:
+Use <b>\r_drawWidth</b> and <b>\r_drawHeight</b> cvars to set persistant drawing resolution, i.e. game frame will be drawed at this resolution and later upscaled/downscaled to window size set by either <b>\r_mode</b> or <b>\r_modeFullscreen</b> cvars.<br>
+Cvar <b>\r_drawScale</b> controls upscale/downscale behavior:
 <ul>
 <li>0 - disabled</li>
 <li>1 - nearest filtering, stretch to full size</li>
@@ -223,7 +223,7 @@ Cvar <b>\r_renderScale</b> controls upscale/downscale behavior:
 <li>3 - linear filtering, stretch to full size</li>
 <li>4 - linear filtering, preserve aspect ratio (black bars on sides)</li>
 </ul>
-It may be useful if you want to render and record 4k+ video on HD display or if you're preferring playing at low resolution but your monitor or GPU driver can't set video|scaling mode properly.<br>
+It may be useful if you want to draw and record 4k+ video on HD display or if you're preferring playing at low resolution but your monitor or GPU driver can't set video|scaling mode properly.<br>
 <br>
 <hr>
 <div id="r_bloom"></div><b>High-Quality Bloom</b><br><br>

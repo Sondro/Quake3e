@@ -8,7 +8,7 @@ What you need:
 - retail CD-ROM of Quake III Arena for Windows or linux
 - optionally, retail CD-ROM of Quake III: Team Arena 
 - a computer running linux (kernel >= 2.2 glibc >= 2.1)
-- running the client requires X11 and 3D hardware acceleration with OpenGL
+- running the user requires X11 and 3D hardware acceleration with OpenGL
 
 Installation:
 

@@ -8,7 +8,7 @@ option(HEADERS_ON_Make "" ON)
 option(VULKAN_ON_Make "" OFF)
 option(APP_JPG_ON_Make "" OFF)
 
-option(RENDERER_DLLS_ON_Make "" OFF)
+option(GFXER_DLLS_ON_Make "" OFF)
 
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules)
@@ -17,21 +17,21 @@ aux_source_directory(code/libjpeg JPG_CODE)
 add_library(jpeg ${JPG_CODE})
 
 
-aux_source_directory(code/server HOST_CODE)
-list(REMOVE_ITEM HOST_CODE code/server/sv_rankings.c)
-add_library(server ${HOST_CODE})
-add_library(server_${HOST_NAME} ${HOST_CODE})
-target_compile_definitions(server_${HOST_NAME} PUBLIC -DDEDICATED)
+aux_source_directory(code/host HOST_CODE)
+list(REMOVE_ITEM HOST_CODE code/host/sv_rankings.c)
+add_library(host ${HOST_CODE})
+add_library(host_${HOST_NAME} ${HOST_CODE})
+target_compile_definitions(host_${HOST_NAME} PUBLIC -DDEDICATED)
 
 
-aux_source_directory(code/qcommon COMMON_CODE)
+aux_source_directory(code/co COMMON_CODE)
 list(FILTER COMMON_CODE EXCLUDE REGEX ".*vm_[alx].*.c")
 
 
-add_library(qcommon ${COMMON_CODE} ${VM_SRC})
-target_link_libraries(qcommon PRIVATE server)
-add_library(qcommon_${HOST_NAME} ${COMMON_CODE} ${VM_SRC})
-target_link_libraries(qcommon_${HOST_NAME} PUBLIC server_${HOST_NAME})
+add_library(co ${COMMON_CODE} ${VM_SRC})
+target_link_libraries(co PRIVATE host)
+add_library(co_${HOST_NAME} ${COMMON_CODE} ${VM_SRC})
+target_link_libraries(co_${HOST_NAME} PUBLIC host_${HOST_NAME})
 
 
 aux_source_directory(code/botlib BOTLIB_CODE)
@@ -39,33 +39,33 @@ add_library(botlib ${BOTLIB_CODE})
 target_compile_definitions(botlib PRIVATE -DBOTLIB)
 
 
-aux_source_directory(code/client USER_CODE)
+aux_source_directory(code/user USER_CODE)
 if(NOT CURL_ON_Make)
-    list(REMOVE_ITEM USER_CODE code/client/app_curl/cl_curl.c)
+    list(REMOVE_ITEM USER_CODE code/user/app_curl/cl_curl.c)
 endif(NOT CURL_ON_Make)
-add_library(client ${USER_CODE})
-target_link_libraries(client qcommon jpeg)
+add_library(user ${USER_CODE})
+target_link_libraries(user co jpeg)
 if(APP_JPG_ON_Make)
-    target_compile_definitions(client PRIVATE -DAPP_JPG_ON_Make)
+    target_compile_definitions(user PRIVATE -DAPP_JPG_ON_Make)
 endif(APP_JPG_ON_Make)
 if(VULKAN_ON_Make)
-    target_compile_definitions(client PRIVATE -DVULKAN_API_ON_Make)
+    target_compile_definitions(user PRIVATE -DVULKAN_API_ON_Make)
 endif(VULKAN_ON_Make)
 
 
 
-aux_source_directory(code/renderercommon RENDERER_COMMON_CODE)
-add_library(renderer_common ${RENDERER_COMMON_CODE})
+aux_source_directory(code/gfxercommon GFXER_COMMON_CODE)
+add_library(gfxer_common ${GFXER_COMMON_CODE})
 
 
-aux_source_directory(code/renderer RENDERER_CODE)
-add_library(renderer ${RENDERER_CODE})
-target_link_libraries(renderer renderer_common)
+aux_source_directory(code/gfxer GFXER_CODE)
+add_library(gfxer ${GFXER_CODE})
+target_link_libraries(gfxer gfxer_common)
 
 
-aux_source_directory(code/renderervk RENDERER_VK_CODE)
-add_library(renderer_vk ${RENDERER_VK_CODE})
-target_link_libraries(renderer_vk renderer_common)
+aux_source_directory(code/gfxervk GFXER_VK_CODE)
+add_library(gfxer_vk ${GFXER_VK_CODE})
+target_link_libraries(gfxer_vk gfxer_common)
 
 
 if(SDL_ON_Make)
@@ -85,7 +85,7 @@ if(UNIX)
             code/unix/unix_shared.c
             code/unix/linux_signals.c)
 
-    if (NOT SDL_ON_Make)
+    if(NOT SDL_ON_Make)
         set(APP_UI_CODE
                 code/unix/linux_glimp.c
                 code/unix/linux_qgl.c
@@ -112,7 +112,7 @@ elseif(WIN32)
             code/win32/win_shared.c
             code/win32/win_syscon.c
             code/win32/win_resource.rc)
-    if (NOT SDL_ON_Make)
+    if(NOT SDL_ON_Make)
         set(APP_UI_CODE
                 code/win32/win_gamma.c
                 code/win32/win_glimp.c
@@ -129,34 +129,34 @@ endif(UNIX)
 
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES AMD|x86)
-    set(VM_CODE code/qcommon/vm_x86.c)
+    set(VM_CODE code/co/vm_x86.c)
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES aarch)
-    set(VM_CODE code/qcommon/vm_aarch64.c)
+    set(VM_CODE code/co/vm_aarch64.c)
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES arm)
-    set(VM_CODE code/qcommon/vm_armv7l.c)
+    set(VM_CODE code/co/vm_armv7l.c)
 else()
-    target_compile_definitions(qcommon PRIVATE -DVM_OFF_CFlags)
+    target_compile_definitions(co PRIVATE -DVM_OFF_CFlags)
 endif()
 
 
 add_executable(${USER_NAME} ${EXE_TYPE} ${VM_CODE} ${APP_CODE} ${APP_UI_CODE})
-target_link_libraries(${USER_NAME} client botlib)
+target_link_libraries(${USER_NAME} user botlib)
 
 if(SDL_ON_Make)
     target_link_libraries(${USER_NAME} app_sdl)
 endif(SDL_ON_Make)
 
 if(VULKAN_ON_Make)
-    target_link_libraries(${USER_NAME} renderer_vk)
+    target_link_libraries(${USER_NAME} gfxer_vk)
     target_compile_definitions(${USER_NAME} PRIVATE -DVULKAN_API_ON_Make)
 else()
-    target_link_libraries(${USER_NAME} renderer)
+    target_link_libraries(${USER_NAME} gfxer)
 endif(VULKAN_ON_Make)
 
 add_executable(${USER_NAME}_${HOST_NAME} ${EXE_TYPE} ${VM_CODE} ${APP_CODE})
-target_link_libraries(${USER_NAME}_${HOST_NAME} qcommon_${HOST_NAME} botlib)
+target_link_libraries(${USER_NAME}_${HOST_NAME} co_${HOST_NAME} botlib)
 
 if(WIN32)
     target_link_libraries(${USER_NAME} winmm comctl32 ws2_32)
-    target_link_libraries(${USER_NAME}-server winmm comctl32 ws2_32)
+    target_link_libraries(${USER_NAME}-host winmm comctl32 ws2_32)
 endif(WIN32)

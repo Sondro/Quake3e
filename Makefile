@@ -6,14 +6,14 @@
 
 #----------------------------------------------------------
 
-USER_PATH_NAME           = client
-HOST_PATH_NAME           = server
+USER_PATH_NAME           = user
+HOST_PATH_NAME           = host
 
-USER_BPATH_NAME          = client
+USER_BPATH_NAME          = user
 HOST_BPATH_NAME          = ded
-REND1_BPATH_NAME         = rend1
-REND2_BPATH_NAME         = rend2
-RENDV_BPATH_NAME         = rendv
+GFX1_BPATH_NAME         = gfx1
+GFX2_BPATH_NAME         = gfx2
+GFXV_BPATH_NAME         = gfxv
 
 OBJECT_SUFFIX            = _-_obj
 
@@ -44,14 +44,14 @@ endif
 BUILD_RELEASE = $(BUILD_PATH)/$(RELEASE_BPATH_NAME)
 BUILD_DEBUG = $(BUILD_PATH)/$(DEBUG_BPATH_NAME)
 
-HOST_PATH = $(CODE_PATH)/server
-USER_PATH = $(CODE_PATH)/client
+HOST_PATH = $(CODE_PATH)/host
+USER_PATH = $(CODE_PATH)/user
 
 APP_CURL_PATH = $(USER_PATH)/app_curl
 ASM_PATH = $(CODE_PATH)/asm
 ASM_X86_PATH = $(ASM_PATH)/x86
 
-COMMON_PATH = $(CODE_PATH)/qcommon
+COMMON_PATH = $(CODE_PATH)/co
 MATH_PATH = $(COMMON_PATH)/math
 MATH_GFX_PATH = $(MATH_PATH)/gfx
 VM_X86_PATH = $(COMMON_PATH)/vm/x86
@@ -74,14 +74,14 @@ BOTLIB_PATH = $(CODE_PATH)/botlib
 UI_PATH = $(CODE_PATH)/ui
 JPG_PATH = $(CODE_PATH)/libjpeg
 
-RENDERER_COMMON_PATH = $(CODE_PATH)/renderercommon
-RENDERER_FONT_PATH = $(RENDERER_COMMON_PATH)/font
-RENDERER1_PATH = $(CODE_PATH)/renderer
-RENDERER2_PATH = $(CODE_PATH)/renderer2
-RENDERER2_FX_PATH = $(RENDERER2_PATH)/glsl
-RENDERERV_PATH = $(CODE_PATH)/renderervk
+GFXER_COMMON_PATH = $(CODE_PATH)/gfxercommon
+GFXER_FONT_PATH = $(GFXER_COMMON_PATH)/font
+GFXER1_PATH = $(CODE_PATH)/gfxer
+GFXER2_PATH = $(CODE_PATH)/gfxer2
+GFXER2_FX_PATH = $(GFXER2_PATH)/glsl
+GFXERV_PATH = $(CODE_PATH)/gfxervk
 
-RENDERER2_STRING_PATH = $(RENDERER2_PATH)/string
+GFXER2_STRING_PATH = $(GFXER2_PATH)/string
 
 #----------------------------------------------------------
 
@@ -97,10 +97,10 @@ USER_BPATH = $(OBJECT_BPATH)/$(USER_BPATH_NAME)
 HOST_BPATH = $(OBJECT_BPATH)/$(HOST_BPATH_NAME)
 BOTLIB_BPATH = $(OBJECT_BPATH)/botlib
 JPG_BPATH = $(OBJECT_BPATH)/libjpeg
-REND1_BPATH = $(OBJECT_BPATH)/$(REND1_BPATH_NAME)
-REND2_BPATH = $(OBJECT_BPATH)/$(REND2_BPATH_NAME)
-REND2_FX_BPATH = $(REND2_BPATH)/glsl
-RENDV_BPATH = $(OBJECT_BPATH)/$(RENDV_BPATH_NAME)
+GFX1_BPATH = $(OBJECT_BPATH)/$(GFX1_BPATH_NAME)
+GFX2_BPATH = $(OBJECT_BPATH)/$(GFX2_BPATH_NAME)
+GFX2_FX_BPATH = $(GFX2_BPATH)/glsl
+GFXV_BPATH = $(OBJECT_BPATH)/$(GFXV_BPATH_NAME)
 
 BINARY_PATH = $(shell which $(1) 2> /dev/null)
 VERSION = $(shell grep "\#define APP_VERSION" $(COMMON_PATH)/q_shared.h | \
@@ -119,7 +119,7 @@ OPENGL2_ON              = 1
 VULKAN_ON_Make          = 1
 VULKAN_API_ON_Make      = 1
 
-RENDERER_DLLS_ON_Make   = 1
+GFXER_DLLS_ON_Make   = 1
 
 SDL_ON_Make             = 1
 CURL_ON_Make            = 1
@@ -129,10 +129,10 @@ APP_JPG_ON_Make         = 0
 
 #----------------------------------------------------------
 
-# Main Renderer(vulkan, opengl2, opengl):
-RENDERER_MAIN_Make = vulkan
+# Main Gfx(vulkan, opengl2, opengl):
+GFXER_MAIN_Make = vulkan
 
-RENDERER_PREFIX_Make = $(USER_NAME)
+GFXER_PREFIX_Make = $(USER_NAME)
 
 #==========================================================
 # FIX SETTINGS:
@@ -167,19 +167,19 @@ export CCACHE_ON
 
 ifeq ($(USER_ON),1)
 
-  ifeq ($(RENDERER_DLLS_ON_Make),0)
-    ifeq ($(RENDERER_MAIN_Make),vulkan)
+  ifeq ($(GFXER_DLLS_ON_Make),0)
+    ifeq ($(GFXER_MAIN_Make),vulkan)
       OPENGL1_ON         = 0
       OPENGL2_ON         = 0
       VULKAN_ON_Make     = 1
     else
-    ifeq ($(RENDERER_MAIN_Make),opengl2)
+    ifeq ($(GFXER_MAIN_Make),opengl2)
       OPENGL1_ON         = 0
       OPENGL2_ON         = 1
       VULKAN_ON_Make     = 0
       VULKAN_API_ON_Make = 0
     else
-    ifeq ($(RENDERER_MAIN_Make),opengl)
+    ifeq ($(GFXER_MAIN_Make),opengl)
       OPENGL1_ON         = 1
       OPENGL2_ON         = 0
       VULKAN_ON_Make     = 0
@@ -188,13 +188,13 @@ ifeq ($(USER_ON),1)
     endif
     endif
   else
-    ifeq ($(RENDERER_MAIN_Make),vulkan)
+    ifeq ($(GFXER_MAIN_Make),vulkan)
       VULKAN_ON_Make     = 1
     else
-    ifeq ($(RENDERER_MAIN_Make),opengl2)
+    ifeq ($(GFXER_MAIN_Make),opengl2)
       OPENGL2_ON         = 1
     else
-    ifeq ($(RENDERER_MAIN_Make),opengl)
+    ifeq ($(GFXER_MAIN_Make),opengl)
       OPENGL1_ON         = 1
     endif
     endif
@@ -340,11 +340,11 @@ ifeq ($(VM_ON),0)
   BASE_CFLAGS += -DVM_OFF_CFlags
 endif # !VM_ON
 
-ifeq ($(RENDERER_DLLS_ON_Make),1)
-  BASE_CFLAGS += -DRENDERER_DLLS_ON_Make
-  BASE_CFLAGS += -DRENDERER_PREFIX_Make=\\\"$(RENDERER_PREFIX_Make)\\\"
-  BASE_CFLAGS += -DRENDERER_MAIN_Make="$(RENDERER_MAIN_Make)"
-endif # =RENDERER_DLLS_ON_Make
+ifeq ($(GFXER_DLLS_ON_Make),1)
+  BASE_CFLAGS += -DGFXER_DLLS_ON_Make
+  BASE_CFLAGS += -DGFXER_PREFIX_Make=\\\"$(GFXER_PREFIX_Make)\\\"
+  BASE_CFLAGS += -DGFXER_MAIN_Make="$(GFXER_MAIN_Make)"
+endif # =GFXER_DLLS_ON_Make
 
 ifdef MAIN_PATH
   BASE_CFLAGS += -DMAIN_PATH=\\\"$(MAIN_PATH)\\\"
@@ -660,9 +660,9 @@ ifeq ($(USER_ON),1)
   $(Q)$(CC) $(UNSHARED_LIB_CFLAGS) $(CFLAGS) -o $@ -c $<
   endef
 
-  define DO_RENDERER_CC
-  $(echo_cmd) "RENDERER_CC $<"
-  $(Q)$(CC) $(RENDERER_CFLAGS) $(CFLAGS) -o $@ -c $<
+  define DO_GFXER_CC
+  $(echo_cmd) "GFXER_CC $<"
+  $(Q)$(CC) $(GFXER_CFLAGS) $(CFLAGS) -o $@ -c $<
   endef
 
   define DO_REF_STR
@@ -673,30 +673,30 @@ ifeq ($(USER_ON),1)
 
 #----------------------------------------------------------
 
-  TARGET_RENDERER1 = $(RENDERER_PREFIX_Make)_opengl_$(SHARED_LIB_NAME)
-  STRINGIFY = $(REND2_BPATH)/stringify$(BIN_EXT)
-  TARGET_RENDERER2 = $(RENDERER_PREFIX_Make)_opengl2_$(SHARED_LIB_NAME)
-  TARGET_RENDERER_VULKAN = $(RENDERER_PREFIX_Make)_vulkan_$(SHARED_LIB_NAME)
+  TARGET_GFXER1 = $(GFXER_PREFIX_Make)_opengl_$(SHARED_LIB_NAME)
+  STRINGIFY = $(GFX2_BPATH)/stringify$(BIN_EXT)
+  TARGET_GFXER2 = $(GFXER_PREFIX_Make)_opengl2_$(SHARED_LIB_NAME)
+  TARGET_GFXER_VULKAN = $(GFXER_PREFIX_Make)_vulkan_$(SHARED_LIB_NAME)
   
   TARGET_USER = $(USER_NAME)$(CPU_EXT)$(BIN_EXT)
   TARGETS += $(B)/$(TARGET_USER)
 
 #----------------------------------------------------------
 
-  ifeq ($(RENDERER_DLLS_ON_Make),1)
-    RENDERER_CFLAGS = $(SHARED_LIB_CFLAGS)
+  ifeq ($(GFXER_DLLS_ON_Make),1)
+    GFXER_CFLAGS = $(SHARED_LIB_CFLAGS)
     ifeq ($(OPENGL1_ON),1)
-      TARGETS += $(B)/$(TARGET_RENDERER1)
+      TARGETS += $(B)/$(TARGET_GFXER1)
     endif
     ifeq ($(OPENGL2_ON),1)
-      TARGETS += $(B)/$(TARGET_RENDERER2)
+      TARGETS += $(B)/$(TARGET_GFXER2)
     endif
     ifeq ($(VULKAN_ON_Make),1)
-      TARGETS += $(B)/$(TARGET_RENDERER_VULKAN)
+      TARGETS += $(B)/$(TARGET_GFXER_VULKAN)
     endif
     else
-      RENDERER_CFLAGS = $(UNSHARED_LIB_CFLAGS)
-  endif # =RENDERER_DLLS_ON_Make
+      GFXER_CFLAGS = $(UNSHARED_LIB_CFLAGS)
+  endif # =GFXER_DLLS_ON_Make
 
 endif # =USER_ON
 
@@ -811,44 +811,44 @@ $(USER_BPATH)/%.o: $(WIN32_PATH)/%.rc
 
 #==========================================================
 
-$(REND1_BPATH)/%.o: $(RENDERER1_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(REND1_BPATH)/%.o: $(RENDERER_COMMON_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(REND1_BPATH)/%.o: $(RENDERER_FONT_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(REND1_BPATH)/%.o: $(MATH_GFX_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(REND1_BPATH)/%.o: $(MATH_PATH)/%.c
-	$(DO_RENDERER_CC)
+$(GFX1_BPATH)/%.o: $(GFXER1_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFX1_BPATH)/%.o: $(GFXER_COMMON_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFX1_BPATH)/%.o: $(GFXER_FONT_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFX1_BPATH)/%.o: $(MATH_GFX_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFX1_BPATH)/%.o: $(MATH_PATH)/%.c
+	$(DO_GFXER_CC)
 
 #----------------------------------------------------------
 
-$(REND2_FX_BPATH)/%.c: $(RENDERER2_FX_PATH)/%.glsl $(STRINGIFY)
+$(GFX2_FX_BPATH)/%.c: $(GFXER2_FX_PATH)/%.glsl $(STRINGIFY)
 	$(DO_REF_STR)
-$(REND2_FX_BPATH)/%.o: $(RENDERER2_FX_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(REND2_BPATH)/%.o: $(RENDERER2_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(REND2_BPATH)/%.o: $(RENDERER_COMMON_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(REND2_BPATH)/%.o: $(RENDERER_FONT_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(REND2_BPATH)/%.o: $(MATH_GFX_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(REND2_BPATH)/%.o: $(MATH_PATH)/%.c
-	$(DO_RENDERER_CC)
+$(GFX2_FX_BPATH)/%.o: $(GFXER2_FX_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFX2_BPATH)/%.o: $(GFXER2_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFX2_BPATH)/%.o: $(GFXER_COMMON_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFX2_BPATH)/%.o: $(GFXER_FONT_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFX2_BPATH)/%.o: $(MATH_GFX_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFX2_BPATH)/%.o: $(MATH_PATH)/%.c
+	$(DO_GFXER_CC)
 
 #----------------------------------------------------------
 
-$(RENDV_BPATH)/%.o: $(RENDERERV_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(RENDV_BPATH)/%.o: $(RENDERER_COMMON_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(RENDV_BPATH)/%.o: $(MATH_GFX_PATH)/%.c
-	$(DO_RENDERER_CC)
-$(RENDV_BPATH)/%.o: $(MATH_PATH)/%.c
-	$(DO_RENDERER_CC)  
+$(GFXV_BPATH)/%.o: $(GFXERV_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFXV_BPATH)/%.o: $(GFXER_COMMON_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFXV_BPATH)/%.o: $(MATH_GFX_PATH)/%.c
+	$(DO_GFXER_CC)
+$(GFXV_BPATH)/%.o: $(MATH_PATH)/%.c
+	$(DO_GFXER_CC)  
 
 endif # =USER_ON
 
@@ -932,10 +932,10 @@ doFolders:
 	@if [ ! -d $(OBJECT_BPATH) ];then $(MKDIR) $(OBJECT_BPATH);fi
 	@if [ ! -d $(USER_BPATH) ];then $(MKDIR) $(USER_BPATH);fi
 	@if [ ! -d $(HOST_BPATH) ];then $(MKDIR) $(HOST_BPATH);fi
-	@if [ ! -d $(REND1_BPATH) ];then $(MKDIR) $(REND1_BPATH);fi
-	@if [ ! -d $(REND2_BPATH) ];then $(MKDIR) $(REND2_BPATH);fi
-	@if [ ! -d $(REND2_FX_BPATH) ];then $(MKDIR) $(REND2_FX_BPATH);fi
-	@if [ ! -d $(RENDV_BPATH) ];then $(MKDIR) $(RENDV_BPATH);fi
+	@if [ ! -d $(GFX1_BPATH) ];then $(MKDIR) $(GFX1_BPATH);fi
+	@if [ ! -d $(GFX2_BPATH) ];then $(MKDIR) $(GFX2_BPATH);fi
+	@if [ ! -d $(GFX2_FX_BPATH) ];then $(MKDIR) $(GFX2_FX_BPATH);fi
+	@if [ ! -d $(GFXV_BPATH) ];then $(MKDIR) $(GFXV_BPATH);fi
 	@if [ ! -d $(BOTLIB_BPATH) ];then $(MKDIR) $(BOTLIB_BPATH);fi
 	
 #@if [ ! -d $(JPG_BPATH) ];then $(MKDIR) $(JPG_BPATH);fi
@@ -1072,58 +1072,58 @@ endif
 
 #----------------------------------------------------------
 
-RENDERER_COMMON_CODE := $(wildcard $(RENDERER_COMMON_PATH)/*.c)
-RENDERER_FONT_CODE := $(wildcard $(RENDERER_FONT_PATH)/*.c)
+GFXER_COMMON_CODE := $(wildcard $(GFXER_COMMON_PATH)/*.c)
+GFXER_FONT_CODE := $(wildcard $(GFXER_FONT_PATH)/*.c)
 
-RENDERER_VULKAN_CODE := $(wildcard $(RENDERERV_PATH)/*.c)
-REND_V_OBJ = $(patsubst $(RENDERER_COMMON_PATH)/%.c, $(RENDV_BPATH)/%.o, $(RENDERER_COMMON_CODE))
-REND_V_OBJ += $(patsubst $(RENDERERV_PATH)/%.c, $(RENDV_BPATH)/%.o, $(RENDERER_VULKAN_CODE))
+GFXER_VULKAN_CODE := $(wildcard $(GFXERV_PATH)/*.c)
+GFX_V_OBJ = $(patsubst $(GFXER_COMMON_PATH)/%.c, $(GFXV_BPATH)/%.o, $(GFXER_COMMON_CODE))
+GFX_V_OBJ += $(patsubst $(GFXERV_PATH)/%.c, $(GFXV_BPATH)/%.o, $(GFXER_VULKAN_CODE))
 
-RENDERER2_CODE := $(wildcard $(RENDERER2_PATH)/*.c)
-REND_2_OBJ = $(patsubst $(RENDERER_COMMON_PATH)/%.c, $(REND2_BPATH)/%.o, $(RENDERER_COMMON_CODE))
-REND_2_OBJ += $(patsubst $(RENDERER_FONT_PATH)/%.c, $(REND2_BPATH)/%.o, $(RENDERER_FONT_CODE))
-REND_2_OBJ += $(patsubst $(RENDERER2_PATH)/%.c, $(REND2_BPATH)/%.o, $(RENDERER2_CODE))
+GFXER2_CODE := $(wildcard $(GFXER2_PATH)/*.c)
+GFX_2_OBJ = $(patsubst $(GFXER_COMMON_PATH)/%.c, $(GFX2_BPATH)/%.o, $(GFXER_COMMON_CODE))
+GFX_2_OBJ += $(patsubst $(GFXER_FONT_PATH)/%.c, $(GFX2_BPATH)/%.o, $(GFXER_FONT_CODE))
+GFX_2_OBJ += $(patsubst $(GFXER2_PATH)/%.c, $(GFX2_BPATH)/%.o, $(GFXER2_CODE))
 
-RENDERER2_FX_CODE := $(wildcard $(RENDERER2_FX_PATH)/*.glsl)
-REND_2_FX_OBJ = $(patsubst $(RENDERER2_FX_PATH)/%.glsl, $(REND2_FX_BPATH)/%.o, $(RENDERER2_FX_CODE))
+GFXER2_FX_CODE := $(wildcard $(GFXER2_FX_PATH)/*.glsl)
+GFX_2_FX_OBJ = $(patsubst $(GFXER2_FX_PATH)/%.glsl, $(GFX2_FX_BPATH)/%.o, $(GFXER2_FX_CODE))
 
-RENDERER1_CODE := $(wildcard $(RENDERER1_PATH)/*.c)
-REND_1_OBJ = $(patsubst $(RENDERER_COMMON_PATH)/%.c, $(REND1_BPATH)/%.o, $(RENDERER_COMMON_CODE))
-REND_1_OBJ += $(patsubst $(RENDERER_FONT_PATH)/%.c, $(REND1_BPATH)/%.o, $(RENDERER_FONT_CODE))
-REND_1_OBJ += $(patsubst $(RENDERER1_PATH)/%.c, $(REND1_BPATH)/%.o, $(RENDERER1_CODE))
+GFXER1_CODE := $(wildcard $(GFXER1_PATH)/*.c)
+GFX_1_OBJ = $(patsubst $(GFXER_COMMON_PATH)/%.c, $(GFX1_BPATH)/%.o, $(GFXER_COMMON_CODE))
+GFX_1_OBJ += $(patsubst $(GFXER_FONT_PATH)/%.c, $(GFX1_BPATH)/%.o, $(GFXER_FONT_CODE))
+GFX_1_OBJ += $(patsubst $(GFXER1_PATH)/%.c, $(GFX1_BPATH)/%.o, $(GFXER1_CODE))
 
 #----------------------------------------------------------
 
-ifeq ($(RENDERER_DLLS_ON_Make),1)
+ifeq ($(GFXER_DLLS_ON_Make),1)
 
   ifeq ($(VULKAN_ON_Make),1)
-    REND_V_OBJ += $(patsubst $(MATH_PATH)/%.c, $(RENDV_BPATH)/%.o, $(MATH_CODE))
-    REND_V_OBJ += $(patsubst $(MATH_GFX_PATH)/%.c, $(RENDV_BPATH)/%.o, $(MATH_GFX_CODE))
+    GFX_V_OBJ += $(patsubst $(MATH_PATH)/%.c, $(GFXV_BPATH)/%.o, $(MATH_CODE))
+    GFX_V_OBJ += $(patsubst $(MATH_GFX_PATH)/%.c, $(GFXV_BPATH)/%.o, $(MATH_GFX_CODE))
   endif
 
   ifeq ($(OPENGL2_ON),1)
-    REND_2_OBJ += $(patsubst $(MATH_PATH)/%.c, $(REND2_BPATH)/%.o, $(MATH_CODE))
-    REND_2_OBJ += $(patsubst $(MATH_GFX_PATH)/%.c, $(REND2_BPATH)/%.o, $(MATH_GFX_CODE))
+    GFX_2_OBJ += $(patsubst $(MATH_PATH)/%.c, $(GFX2_BPATH)/%.o, $(MATH_CODE))
+    GFX_2_OBJ += $(patsubst $(MATH_GFX_PATH)/%.c, $(GFX2_BPATH)/%.o, $(MATH_GFX_CODE))
   endif
 
   ifeq ($(OPENGL1_ON),1)
-    REND_1_OBJ += $(patsubst $(MATH_PATH)/%.c, $(REND1_BPATH)/%.o, $(MATH_CODE))
-    REND_1_OBJ += $(patsubst $(MATH_GFX_PATH)/%.c, $(REND1_BPATH)/%.o, $(MATH_GFX_CODE))
+    GFX_1_OBJ += $(patsubst $(MATH_PATH)/%.c, $(GFX1_BPATH)/%.o, $(MATH_CODE))
+    GFX_1_OBJ += $(patsubst $(MATH_GFX_PATH)/%.c, $(GFX1_BPATH)/%.o, $(MATH_GFX_CODE))
   endif
 
-endif # =RENDERER_DLLS_ON_Make
+endif # =GFXER_DLLS_ON_Make
 
 #----------------------------------------------------------
 
-ifeq ($(RENDERER_DLLS_ON_Make),0)
+ifeq ($(GFXER_DLLS_ON_Make),0)
   ifeq ($(VULKAN_ON_Make),1)
-    OBJ += $(REND_V_OBJ)
+    OBJ += $(GFX_V_OBJ)
   else
     ifeq ($(OPENGL2_ON),1)
-      OBJ += $(REND_2_OBJ)
-      OBJ += $(REND_2_FX_OBJ)
+      OBJ += $(GFX_2_OBJ)
+      OBJ += $(GFX_2_FX_OBJ)
     else
-      OBJ += $(REND_1_OBJ)
+      OBJ += $(GFX_1_OBJ)
     endif
   endif
 endif
@@ -1138,24 +1138,24 @@ $(B)/$(TARGET_USER): $(OBJ)
 		$(LDFLAGS)
 
 #===========================================================
-# Modular renderers:
+# Modular gfxers:
 #===========================================================
 
-$(B)/$(TARGET_RENDERER_VULKAN): $(REND_V_OBJ)
+$(B)/$(TARGET_GFXER_VULKAN): $(GFX_V_OBJ)
 	$(echo_cmd) "LD $@"
-	$(Q)$(CC) -o $@ $(REND_V_OBJ) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
+	$(Q)$(CC) -o $@ $(GFX_V_OBJ) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
 
-$(STRINGIFY): $(wildcard $(RENDERER2_STRING_PATH)/*.c)
+$(STRINGIFY): $(wildcard $(GFXER2_STRING_PATH)/*.c)
 	$(echo_cmd) "LD $@"
-	$(Q)$(CC) -o $@ $(wildcard $(RENDERER2_STRING_PATH)/*.c) $(LDFLAGS)
+	$(Q)$(CC) -o $@ $(wildcard $(GFXER2_STRING_PATH)/*.c) $(LDFLAGS)
 
-$(B)/$(TARGET_RENDERER2): $(REND_2_OBJ) $(REND_2_FX_OBJ)
+$(B)/$(TARGET_GFXER2): $(GFX_2_OBJ) $(GFX_2_FX_OBJ)
 	$(echo_cmd) "LD $@"
-	$(Q)$(CC) -o $@ $(REND_2_OBJ) $(REND_2_FX_OBJ) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
+	$(Q)$(CC) -o $@ $(GFX_2_OBJ) $(GFX_2_FX_OBJ) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
 
-$(B)/$(TARGET_RENDERER1): $(REND_1_OBJ)
+$(B)/$(TARGET_GFXER1): $(GFX_1_OBJ)
 	$(echo_cmd) "LD $@"
-	$(Q)$(CC) -o $@ $(REND_1_OBJ) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
+	$(Q)$(CC) -o $@ $(GFX_1_OBJ) $(SHARED_LIB_CFLAGS) $(SHARED_LIB_LDFLAGS)
 
 endif # =USER_ON
 
@@ -1186,16 +1186,16 @@ clean: clean-object
 	@echo "'clean' = remove all TARGETS in project:"
 	@rm -rf $(BUILD_RELEASE)/$(TARGET_HOST)
 	@rm -rf $(BUILD_RELEASE)/$(TARGET_USER)
-	@rm -rf $(BUILD_RELEASE)/$(TARGET_RENDERER_VULKAN)
-	@rm -rf $(BUILD_RELEASE)/$(TARGET_RENDERER2)
-	@rm -rf $(BUILD_RELEASE)/$(TARGET_RENDERER1)
-	@rm -rf $(BUILD_RELEASE)$(OBJECT_SUFFIX)/$(REND2_BPATH_NAME)/stringify$(BIN_EXT)
+	@rm -rf $(BUILD_RELEASE)/$(TARGET_GFXER_VULKAN)
+	@rm -rf $(BUILD_RELEASE)/$(TARGET_GFXER2)
+	@rm -rf $(BUILD_RELEASE)/$(TARGET_GFXER1)
+	@rm -rf $(BUILD_RELEASE)$(OBJECT_SUFFIX)/$(GFX2_BPATH_NAME)/stringify$(BIN_EXT)
 	@rm -rf $(BUILD_DEBUG)/$(TARGET_HOST)
 	@rm -rf $(BUILD_DEBUG)/$(TARGET_USER)
-	@rm -rf $(BUILD_DEBUG)/$(TARGET_RENDERER_VULKAN)
-	@rm -rf $(BUILD_DEBUG)/$(TARGET_RENDERER2)
-	@rm -rf $(BUILD_DEBUG)/$(TARGET_RENDERER1)
-	@rm -rf $(BUILD_DEBUG)$(OBJECT_SUFFIX)/$(REND2_BPATH_NAME)/stringify$(BIN_EXT)
+	@rm -rf $(BUILD_DEBUG)/$(TARGET_GFXER_VULKAN)
+	@rm -rf $(BUILD_DEBUG)/$(TARGET_GFXER2)
+	@rm -rf $(BUILD_DEBUG)/$(TARGET_GFXER1)
+	@rm -rf $(BUILD_DEBUG)$(OBJECT_SUFFIX)/$(GFX2_BPATH_NAME)/stringify$(BIN_EXT)
 
 #----------------------------------------------------------
 

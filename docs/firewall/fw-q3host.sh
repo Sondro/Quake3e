@@ -1,10 +1,10 @@
 #!/bin/sh
 
-# this can be called from another script as ./q3hostfw <server-id> <port-number>
+# this can be called from another script as ./q3hostfw <host-id> <port-number>
 
 NAME=${1:-LIMITER} # you need to specify unique table name for each port
 
-PORT=${2:-27960} # and unique server port as well
+PORT=${2:-27960} # and unique host port as well
 
 RATE=768/second
 BURST=128
