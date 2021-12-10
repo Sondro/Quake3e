@@ -1,19 +1,15 @@
 /*
 ===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
-
 This file is part of Quake III Arena source code.
-
 Quake III Arena source code is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
-
 Quake III Arena source code is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -266,12 +262,9 @@ void R_ImageList_f( void ) {
 /*
 ================
 ResampleTexture
-
 Used to resample images in a more general than quartering fashion.
-
 This will only be filtered properly if the resampled size
 is greater than half the original size.
-
 If a larger shrinking is needed, use the mipmap function 
 before or after.
 ================
@@ -301,7 +294,8 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 		frac += fracstep;
 	}
 
-	for (i=0 ; i<outheight ; i++, out += outwidth) {
+	i=0;
+	for ( ; i<outheight; i++, out += outwidth) {
 		inrow = in + inwidth*(int)((i+0.25)*inheight/outheight);
 		inrow2 = in + inwidth*(int)((i+0.75)*inheight/outheight);
 		for (j=0 ; j<outwidth ; j++) {
@@ -321,7 +315,6 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 /*
 ================
 R_LightScaleTexture
-
 Scale up the pixel values in a texture to increase the
 lighting range
 ================
@@ -391,7 +384,6 @@ static void R_LightScaleTexture( byte *in, int inwidth, int inheight, qboolean o
 /*
 ================
 R_MipMap2
-
 Operates in place, quartering the size of the texture
 Proper linear filter
 ================
@@ -454,7 +446,6 @@ static void R_MipMap2( unsigned * const out, unsigned * const in, int inWidth, i
 /*
 ================
 R_MipMap
-
 Operates in place, quartering the size of the texture
 ================
 */
@@ -503,7 +494,6 @@ static void R_MipMap( byte *out, byte *in, int width, int height ) {
 /*
 ==================
 R_BlendOverTexture
-
 Apply a color blend over a set of pixels
 ==================
 */
@@ -1050,7 +1040,6 @@ void R_UploadSubImage( byte *data, int x, int y, int width, int height, image_t 
 /*
 ================
 R_CreateImage
-
 This is the only way any image_t are created
 Picture data may be modified in-place during mipmap processing
 ================
@@ -1212,7 +1201,6 @@ static const int numImageLoaders = ARRAY_LEN( imageLoaders );
 /*
 =================
 R_LoadImage
-
 Loads any of the supported image types into a cannonical
 32 bit format.
 =================
@@ -1297,7 +1285,6 @@ static const char *R_LoadImage( const char *name, byte **pic, int *width, int *h
 /*
 ===============
 R_FindImageFile
-
 Finds or loads the given image.
 Returns NULL if it fails, not a default image.
 ==============
@@ -1436,7 +1423,6 @@ void R_InitFogTable( void ) {
 /*
 ================
 R_FogFactor
-
 Returns a 0.0 to 1.0 fog density value
 This is called for each texel of the fog texture on startup
 and for each vertex of transparent shaders in fog dynamically
@@ -1518,7 +1504,6 @@ static int Hex( char c )
 /*
 ==================
 R_BuildDefaultImage
-
 Create solid color texture from following input formats (hex):
 #rgb
 #rrggbb
@@ -1679,6 +1664,12 @@ void R_SetColorMappings( void ) {
 	float	g;
 	int		inf;
 	int		shift;
+	qboolean applyGamma;
+
+	if ( !tr.inited ) {
+		// it may be called from window handling functions where gamma flags is now yet known/set
+		return;
+	}
 
 	// setup the overbright lighting
 	// negative value will force gamma in windowed mode
@@ -1692,11 +1683,15 @@ void R_SetColorMappings( void ) {
 
 	// never overbright in windowed mode
 #ifdef VULKAN_ON_Make
-	if ( !glConfig.isFullscreen && r_overBrightBits->integer >= 0 && !vk.fboActive )
+	if ( !glConfig.isFullscreen && r_overBrightBits->integer >= 0 && !vk.fboActive ) {
 #else
-	if ( !glConfig.isFullscreen && r_overBrightBits->integer >= 0 )
+	if ( !glConfig.isFullscreen && r_overBrightBits->integer >= 0 ) {
 #endif
 		tr.overbrightBits = 0;
+		applyGamma = qfalse;
+	} else {
+		applyGamma = qtrue;
+	}
 
 	// allow 2 overbright bits in 24 bit, but only 1 in 16 bit
 	if ( glConfig.colorBits > 16 ) {
@@ -1745,16 +1740,21 @@ void R_SetColorMappings( void ) {
 
 #ifdef VULKAN_ON_Make
 	vk_update_post_process_pipelines();
-	
+
 	if ( gls.deviceSupportsGamma ) {
 		if ( vk.fboActive )
 			ri.GLimp_SetGamma( s_gammatable_linear, s_gammatable_linear, s_gammatable_linear );
-		else
-			ri.GLimp_SetGamma( s_gammatable, s_gammatable, s_gammatable );
+		else {
+			if ( applyGamma ) {
+				ri.GLimp_SetGamma( s_gammatable, s_gammatable, s_gammatable );
+			}
+		}
 	}
 #else
 	if ( gls.deviceSupportsGamma ) {
-		ri.GLimp_SetGamma( s_gammatable, s_gammatable, s_gammatable );
+		if ( applyGamma ) {
+			ri.GLimp_SetGamma( s_gammatable, s_gammatable, s_gammatable );
+		}
 	}
 #endif
 }
@@ -1834,16 +1834,13 @@ void R_DeleteTextures( void ) {
 
 /*
 ============================================================================
-
 SKINS
-
 ============================================================================
 */
 
 /*
 ==================
 CommaParse
-
 This is unfortunate, but the skin files aren't
 compatable with our normal parsing rules.
 ==================

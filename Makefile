@@ -16,6 +16,7 @@ REND2_BPATH_NAME         = rend2
 RENDV_BPATH_NAME         = rendv
 
 OBJECT_SUFFIX            = _-_obj
+#STD                      = -std=gnu11 -pedantic
 
 DEBUG_BPATH_NAME         = debug-$(PLATFORM)-$(CPU)
 RELEASE_BPATH_NAME       = release-$(PLATFORM)-$(CPU)
@@ -76,12 +77,13 @@ JPG_PATH = $(CODE_PATH)/libjpeg
 
 RENDERER_COMMON_PATH = $(CODE_PATH)/renderercommon
 RENDERER_FONT_PATH = $(RENDERER_COMMON_PATH)/font
-RENDERER1_PATH = $(CODE_PATH)/renderer
-RENDERER2_PATH = $(CODE_PATH)/renderer2
-RENDERER2_FX_PATH = $(RENDERER2_PATH)/glsl
 RENDERERV_PATH = $(CODE_PATH)/renderervk
 
+RENDERER2_PATH = $(CODE_PATH)/renderer2
+RENDERER2_FX_PATH = $(RENDERER2_PATH)/glsl
 RENDERER2_STRING_PATH = $(RENDERER2_PATH)/string
+
+RENDERER1_PATH = $(CODE_PATH)/renderer
 
 #----------------------------------------------------------
 
@@ -329,7 +331,7 @@ ifeq ($(CPU),aarch64)
 endif
 
 #==========================================================
-BASE_CFLAGS =
+BASE_CFLAGS = ${STD}
 #==========================================================
 
 ifeq ($(APP_JPG_ON_Make),1)
@@ -673,11 +675,11 @@ ifeq ($(USER_ON),1)
 
 #----------------------------------------------------------
 
-  TARGET_RENDERER1 = $(RENDERER_PREFIX_Make)_opengl_$(SHARED_LIB_NAME)
+  TARGET_RENDERER_VULKAN = $(RENDERER_PREFIX_Make)_vulkan_$(SHARED_LIB_NAME)
   STRINGIFY = $(REND2_BPATH)/stringify$(BIN_EXT)
   TARGET_RENDERER2 = $(RENDERER_PREFIX_Make)_opengl2_$(SHARED_LIB_NAME)
-  TARGET_RENDERER_VULKAN = $(RENDERER_PREFIX_Make)_vulkan_$(SHARED_LIB_NAME)
-  
+  TARGET_RENDERER1 = $(RENDERER_PREFIX_Make)_opengl_$(SHARED_LIB_NAME)
+
   TARGET_USER = $(USER_NAME)$(CPU_EXT)$(BIN_EXT)
   TARGETS += $(B)/$(TARGET_USER)
 
@@ -685,14 +687,14 @@ ifeq ($(USER_ON),1)
 
   ifeq ($(RENDERER_DLLS_ON_Make),1)
     RENDERER_CFLAGS = $(SHARED_LIB_CFLAGS)
-    ifeq ($(OPENGL1_ON),1)
-      TARGETS += $(B)/$(TARGET_RENDERER1)
+    ifeq ($(VULKAN_ON_Make),1)
+      TARGETS += $(B)/$(TARGET_RENDERER_VULKAN)
     endif
     ifeq ($(OPENGL2_ON),1)
       TARGETS += $(B)/$(TARGET_RENDERER2)
     endif
-    ifeq ($(VULKAN_ON_Make),1)
-      TARGETS += $(B)/$(TARGET_RENDERER_VULKAN)
+    ifeq ($(OPENGL1_ON),1)
+      TARGETS += $(B)/$(TARGET_RENDERER1)
     endif
     else
       RENDERER_CFLAGS = $(UNSHARED_LIB_CFLAGS)
