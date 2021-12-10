@@ -131,7 +131,7 @@ APP_JPG_ON_Make         = 0
 
 #----------------------------------------------------------
 
-# Main Renderer(vulkan, opengl2, opengl):
+# Main Renderer(vulkan, opengl2, opengl1):
 RENDERER_MAIN_Make = vulkan
 
 RENDERER_PREFIX_Make = $(USER_NAME)
@@ -181,7 +181,7 @@ ifeq ($(USER_ON),1)
       VULKAN_ON_Make     = 0
       VULKAN_API_ON_Make = 0
     else
-    ifeq ($(RENDERER_MAIN_Make),opengl)
+    ifeq ($(RENDERER_MAIN_Make),opengl1)
       OPENGL1_ON         = 1
       OPENGL2_ON         = 0
       VULKAN_ON_Make     = 0
@@ -196,7 +196,7 @@ ifeq ($(USER_ON),1)
     ifeq ($(RENDERER_MAIN_Make),opengl2)
       OPENGL2_ON         = 1
     else
-    ifeq ($(RENDERER_MAIN_Make),opengl)
+    ifeq ($(RENDERER_MAIN_Make),opengl1)
       OPENGL1_ON         = 1
     endif
     endif
@@ -678,7 +678,7 @@ ifeq ($(USER_ON),1)
   TARGET_RENDERER_VULKAN = $(RENDERER_PREFIX_Make)_vulkan_$(SHARED_LIB_NAME)
   STRINGIFY = $(REND2_BPATH)/stringify$(BIN_EXT)
   TARGET_RENDERER2 = $(RENDERER_PREFIX_Make)_opengl2_$(SHARED_LIB_NAME)
-  TARGET_RENDERER1 = $(RENDERER_PREFIX_Make)_opengl_$(SHARED_LIB_NAME)
+  TARGET_RENDERER1 = $(RENDERER_PREFIX_Make)_opengl1_$(SHARED_LIB_NAME)
 
   TARGET_USER = $(USER_NAME)$(CPU_EXT)$(BIN_EXT)
   TARGETS += $(B)/$(TARGET_USER)
