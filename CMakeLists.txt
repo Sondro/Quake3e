@@ -129,9 +129,15 @@ endif(UNIX)
 
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES AMD|x86)
+<<<<<<< HEAD
     set(VM_CODE code/qcommon/vm_x86.c)
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES aarch)
     set(VM_CODE code/qcommon/vm_aarch64.c)
+=======
+    set(VM_SRCS code/qcommon/vm_x86.c)
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES aarch|arm64)
+    set(VM_SRCS code/qcommon/vm_aarch64.c)
+>>>>>>> 73c99cdca42b05fc12232b08793e8ee6b7f8cbe1
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES arm)
     set(VM_CODE code/qcommon/vm_armv7l.c)
 else()
