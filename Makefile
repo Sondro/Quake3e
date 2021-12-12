@@ -11,9 +11,9 @@ HOST_PATH_NAME           = server
 
 USER_BPATH_NAME          = client
 HOST_BPATH_NAME          = ded
-REND1_BPATH_NAME         = rend1
-REND2_BPATH_NAME         = rend2
 RENDV_BPATH_NAME         = rendv
+REND2_BPATH_NAME         = rend2
+REND1_BPATH_NAME         = rend1
 
 OBJECT_SUFFIX            = _-_obj
 #STD                      = -std=gnu11 -pedantic
@@ -77,6 +77,7 @@ JPG_PATH = $(CODE_PATH)/libjpeg
 
 RENDERER_COMMON_PATH = $(CODE_PATH)/renderercommon
 RENDERER_FONT_PATH = $(RENDERER_COMMON_PATH)/font
+
 RENDERERV_PATH = $(CODE_PATH)/renderervk
 
 RENDERER2_PATH = $(CODE_PATH)/renderer2
