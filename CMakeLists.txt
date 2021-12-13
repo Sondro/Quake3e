@@ -18,7 +18,7 @@ add_library(jpeg ${JPG_CODE})
 
 
 aux_source_directory(code/server HOST_CODE)
-list(REMOVE_ITEM HOST_CODE code/Host/sv_rankings.c)
+list(REMOVE_ITEM HOST_CODE code/server/sv_rankings.c)
 add_library(server ${HOST_CODE})
 add_library(server_${HOST_NAME} ${HOST_CODE})
 target_compile_definitions(server_${HOST_NAME} PUBLIC -DDEDICATED)
@@ -39,7 +39,7 @@ add_library(botlib ${BOTLIB_CODE})
 target_compile_definitions(botlib PRIVATE -DBOTLIB)
 
 
-aux_source_directory(code/User USER_CODE)
+aux_source_directory(code/client USER_CODE)
 if(NOT CURL_ON_Make)
     list(REMOVE_ITEM USER_CODE code/client/app_curl/cl_curl.c)
 endif(NOT CURL_ON_Make)
