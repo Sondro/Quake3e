@@ -92,7 +92,7 @@ All build dependencies (libraries, headers) are bundled-in
 
 Build with either `make ARCH=x86` or `make ARCH=x86_64` commands depending on your target system, then copy resulting binaries from created `build` directory or use command:
 
-`make install BUILD_PATH=<path_to_game_files>`
+`make install DESTDIR=<path_to_game_files>`
 
 ---
 
@@ -108,7 +108,7 @@ Build with: `make`
 
 Copy the resulting binaries from created `build` directory or use command:
 
-`make install BUILD_PATH=<path_to_game_files>`
+`make install DESTDIR=<path_to_game_files>`
 
 ---
 
@@ -122,7 +122,7 @@ Build with: `make`
 
 Copy the resulting binaries from created `build` directory or use command:
 
-`make install BUILD_PATH=<path_to_game_files>`
+`make install DESTDIR=<path_to_game_files>`
 
 ---
 
@@ -139,27 +139,27 @@ Copy the resulting binaries from created `build` directory
 
 Several Makefile options are available for linux/mingw/macos builds:
 
-`BUILD_USER=1` - build unified client/server executable, enabled by default
+`BUILD_CLIENT=1` - build unified client/server executable, enabled by default
 
-`BUILD_HOST=1` - build dedicated server executable, enabled by default
+`BUILD_SERVER=1` - build dedicated server executable, enabled by default
 
-`SDL_ON_Make=1`- use SDL2 backend for video, audio, input subsystems, enabled by default, enforced for macos
+`SDL_ON_Make=0`- use SDL2 backend for video, audio, input subsystems, enabled by default, enforced for macos
 
 `VULKAN_ON_Make=1` - build vulkan modular renderer, enabled by default
 
-`OPENGL1_ON=1` - build opengl1 modular renderer, enabled by default
+`OPENGL_ON=1` - build opengl modular renderer, enabled by default
 
 `OPENGL2_ON=0` - build opengl2 modular renderer, disabled by default
 
 `RENDERER_DLLS_ON_Make=1` - do not link single renderer into client binary, compile all enabled renderers as dynamic libraries and allow to switch them on the fly via `\cl_renderer` cvar, enabled by default
 
-`RENDERER_MAIN_Make=opengl` - set default value for `\cl_renderer` cvar or use selected renderer for static build for `RENDERER_DLLS_ON_Make=0`, valid options are `vulkan`, `opengl2`, `openg1l`
+`RENDERER_MAIN_Make=opengl` - set default value for `\cl_renderer` cvar or use selected renderer for static build for `RENDERER_DLLS_ON_Make=0`, valid options are `opengl`, `opengl2`, `vulkan`
 
 `APP_JPG_ON_Make=0` - use current system JPEG library, disabled by default
 
 Example:
 
-`make BUILD_HOST=0 RENDERER_DLLS_ON_Make=0 RENDERER_MAIN_Make=vulkan` - which means do not build dedicated binary, build client with single static vulkan renderer
+`make BUILD_SERVER=0 RENDERER_DLLS_ON_Make=0 RENDERER_MAIN_Make=vulkan` - which means do not build dedicated binary, build client with single static vulkan renderer
 
 ## Contacts
 
