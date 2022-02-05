@@ -6,14 +6,11 @@
 
 #----------------------------------------------------------
 
-USER_PATH_NAME           = client
-HOST_PATH_NAME           = server
-
 USER_BPATH_NAME          = client
 HOST_BPATH_NAME          = ded
-REND1_BPATH_NAME         = rend1
-REND2_BPATH_NAME         = rend2
 RENDV_BPATH_NAME         = rendv
+REND2_BPATH_NAME         = rend2
+REND1_BPATH_NAME         = rend1
 
 OBJECT_SUFFIX            = _-_obj
 #STD                      = -std=gnu11 -pedantic
@@ -113,10 +110,10 @@ VERSION = $(shell grep "\#define APP_VERSION" $(COMMON_PATH)/q_shared.h | \
 #==========================================================
 
 USER_ON                 = 1
-HOST_ON                 = 1
+HOST_ON                 = 0
 
-OPENGL1_ON              = 1
 OPENGL2_ON              = 1
+OPENGL1_ON              = 0
 
 VULKAN_ON_Make          = 1
 VULKAN_API_ON_Make      = 1
@@ -132,7 +129,7 @@ APP_JPG_ON_Make         = 0
 #----------------------------------------------------------
 
 # Main Renderer(vulkan, opengl2, opengl1):
-RENDERER_MAIN_Make = vulkan
+RENDERER_MAIN_Make = opengl2
 
 RENDERER_PREFIX_Make = $(USER_NAME)
 
